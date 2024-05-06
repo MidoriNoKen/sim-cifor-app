@@ -10,9 +10,9 @@ const passwordInput = ref(null);
 const currentPasswordInput = ref(null);
 
 const form = useForm({
-    current_password: '',
-    password: '',
-    password_confirmation: '',
+    current_password: null,
+    password: null,
+    password_confirmation: null,
 });
 
 const updatePassword = () => {

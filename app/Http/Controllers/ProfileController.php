@@ -19,7 +19,7 @@ class ProfileController extends Controller
      * Display the user's profile form.
      */
     public function edit(Request $request): Response
-    {;
+    {
         $loggedRole = Role::where('id', Auth::user()->role->id)->value('name');
         return Inertia::render('Profile/Edit', [
             'loggedRole' => $loggedRole,

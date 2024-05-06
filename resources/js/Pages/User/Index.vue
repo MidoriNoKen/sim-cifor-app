@@ -13,9 +13,14 @@ const deleteUser = (user) => {
         router.delete(`/users/${user.id}`);
     }
 };
+
+const createUser = () => {
+    router.get(`/users/create`);
+};
 </script>
 
 <template>
+
     <Head title="Profile" />
 
     <AuthenticatedLayout>
@@ -28,8 +33,7 @@ const deleteUser = (user) => {
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
                 <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
                     <table
-                        class="table align-middle text-center table-responsive max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6"
-                    >
+                        class="table align-middle text-center table-responsive max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
                         <thead>
                             <tr>
                                 <th>Name</th>
@@ -52,23 +56,24 @@ const deleteUser = (user) => {
                                 <td>{{ user.manager }}</td>
                                 <td>{{ user.born_date }}</td>
                                 <td>
-                                    <button
-                                        @click="editUser(user)"
-                                        class="btn btn-warning hover-background btn-sm m-1"
-                                        style="color: white"
-                                    >
+                                    <button @click="editUser(user)" class="btn btn-warning hover-background btn-sm m-1"
+                                        style="color: white">
                                         Edit
                                     </button>
-                                    <button
-                                        @click="deleteUser(user)"
-                                        class="btn btn-danger hover-background btn-sm m-1"
-                                    >
+                                    <button @click="deleteUser(user)"
+                                        class="btn btn-danger hover-background btn-sm m-1">
                                         Delete
                                     </button>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
+                    <div class="text-center">
+                        <button @click="createUser()" class="btn btn-primary hover-background btn-sm m-1"
+                            style="color: white">
+                            Create
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

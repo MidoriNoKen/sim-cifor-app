@@ -8,6 +8,8 @@ use App\Models\Role;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Validation\Rules\Password;
@@ -30,29 +32,47 @@ class UserController extends Controller
 
     public function create()
     {
-        return Inertia::render('Users/Create');
+        return Inertia::render('User/Create');
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|min:8',
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|lowercase|email|max:255|unique:' . User::class,
+            'password' => ['required', 'confirmed', Password::defaults()],
+            'password_confirmation' => 'required|string',
+            'position' => 'required|string',
+            'supervisor_id' => 'nullable|string',
+            'manager_id' => 'nullable|string',
+            'born_date' => 'required|date',
+            'role' => 'required|string|exists:roles,name',
         ]);
 
-        User::create([
+        $role_id = Role::where('name', $request->role)->value('id');
+
+        $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => bcrypt($request->password),
+            'password' => Hash::make($request->password),
+            'password_confirmation' => $request->password_confirmation,
+            'position' => $request->position,
+            'supervisor_id' => $request->supervisor_id,
+            'manager_id' => $request->manager_id,
+            'born_date' => $request->born_date,
+            'role_id' => $role_id
         ]);
 
-        return Redirect::route('user.index');
+        event(new Registered($user));
+
+        return Redirect::route('users.index');
     }
 
     public function edit(User $user)
     {
+        $loggedRole = Role::where('id', Auth::user()->role->id)->value('name');
         return Inertia::render('User/Edit', [
+            'loggedRole' => $loggedRole,
             'user' => $user,
         ]);
     }
@@ -61,7 +81,7 @@ class UserController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
+            'email' => 'required|string|lowercase|email|max:255|unique:' . User::class . ',email,' . $user->id,
             'password' => ['required', 'confirmed', Password::defaults()],
             'password_confirmation' => 'required|string',
             'position' => 'required|string',
@@ -83,13 +103,13 @@ class UserController extends Controller
             'role_id' => $request->role_id
         ]);
 
-        return Redirect::route('user.index');
+        return Redirect::route('users.index');
     }
 
-    public function delete(User $user)
+    public function destroy(User $user)
     {
         $user->delete();
 
-        return Redirect::route('user.index');
+        return Redirect::route('users.index');
     }
 }
