@@ -70,7 +70,7 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
-        $loggedRole = Role::where('id', Auth::user()->role->id)->value('name');
+        $loggedRole = Auth::user()->role->name;
         return Inertia::render('User/Edit', [
             'loggedRole' => $loggedRole,
             'user' => $user,

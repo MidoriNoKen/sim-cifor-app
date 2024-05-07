@@ -43,7 +43,7 @@ class RegisteredUserController extends Controller
             'born_date' => 'required|date',
         ]);
 
-        $role = Role::where('name', RoleEnum::ADMIN)->value('id');
+        $role = Role::where('name', RoleEnum::STAFF)->value('id');
 
         $user = User::create([
             'name' => $request->name,

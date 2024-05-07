@@ -20,7 +20,7 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): Response
     {
-        $loggedRole = Role::where('id', Auth::user()->role->id)->value('name');
+        $loggedRole = Auth::user()->role->name;
         return Inertia::render('Profile/Edit', [
             'loggedRole' => $loggedRole,
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
