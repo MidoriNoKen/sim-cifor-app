@@ -14,7 +14,7 @@ class CreateLeaveApplicationsTable extends Migration
     public function up()
     {
         Schema::create('leave_applications', function (Blueprint $table) {
-            $table->string('id')->primary();
+            $table->id();
             $table->string('applicant_id');
             $table->string('status');
 

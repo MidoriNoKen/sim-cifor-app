@@ -53,6 +53,7 @@ const showingNavigationDropdown = ref(false);
                                 >
                                     Leave Applications
                                 </NavLink>
+                                <NavLink> Travel Authorisations </NavLink>
                             </div>
                         </div>
 
