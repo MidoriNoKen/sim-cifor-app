@@ -77,7 +77,7 @@ const form = useForm({
                 <option value="" disabled>Select Role</option>
                 <option value="Manager">Manager</option>
                 <option value="Admin">Admin</option>
-                <option value="Employee">Employee</option>
+                <option value="Staff">Staff</option>
             </select>
 
             <InputError class="mt-2" :message="form.errors.role" />
@@ -92,7 +92,7 @@ const form = useForm({
                 <option value="" disabled>Select Position</option>
                 <option value="Manager">Manager</option>
                 <option value="Supervisor">Supervisor</option>
-                <option value="Employee">Employee</option>
+                <option value="Staff">Staff</option>
             </select>
 
             <InputError class="mt-2" :message="form.errors.position" />
@@ -105,8 +105,8 @@ const form = useForm({
                 class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                 id="supervisor_id" v-model="form.supervisor_id">
                 <option value="" disabled>Select Position</option>
-                <option value="A" id="test1">Test</option>
-                <option value="B" id="test2">Test</option>
+                <option value="" id="test1">Test</option>
+                <option value="" id="test2">Test</option>
             </select>
 
             <InputError class="mt-2" :message="form.errors.supervisor_id" />
@@ -119,8 +119,8 @@ const form = useForm({
                 class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                 v-model="form.manager_id">
                 <option value="" disabled>Select Position</option>
-                <option value="A" id="test1">Test</option>
-                <option value="B" id="test2">Test</option>
+                <option value="" id="test1">Test</option>
+                <option value="" id="test2">Test</option>
             </select>
 
             <InputError class="mt-2" :message="form.errors.manager_id" />

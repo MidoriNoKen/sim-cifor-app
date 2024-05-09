@@ -75,7 +75,7 @@ const submit = () => {
                     <option value="" disabled>Select Position</option>
                     <option value="Manager">Manager</option>
                     <option value="Supervisor">Supervisor</option>
-                    <option value="Employee">Employee</option>
+                    <option value="Staff">Staff</option>
                 </select>
 
                 <InputError class="mt-2" :message="form.errors.position" />
