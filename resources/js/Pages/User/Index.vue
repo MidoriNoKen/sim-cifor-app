@@ -20,7 +20,8 @@ const createUser = () => {
 </script>
 
 <template>
-    <Head title="Profile" />
+
+    <Head title="User" />
 
     <AuthenticatedLayout>
         <template #header>
@@ -55,17 +56,12 @@ const createUser = () => {
                                     <td>{{ user.manager }}</td>
                                     <td>{{ user.born_date }}</td>
                                     <td>
-                                        <button
-                                            @click="editUser(user)"
-                                            class="btn btn-warning hover-background btn-sm m-1"
-                                            style="color: white"
-                                        >
+                                        <button @click="editUser(user)"
+                                            class="btn btn-warning hover-background btn-sm m-1" style="color: white">
                                             Edit
                                         </button>
-                                        <button
-                                            @click="deleteUser(user)"
-                                            class="btn btn-danger hover-background btn-sm m-1"
-                                        >
+                                        <button @click="deleteUser(user)"
+                                            class="btn btn-danger hover-background btn-sm m-1">
                                             Delete
                                         </button>
                                     </td>
@@ -73,11 +69,8 @@ const createUser = () => {
                             </tbody>
                         </table>
                         <div class="text-center">
-                            <button
-                                @click="createUser()"
-                                class="btn btn-primary hover-background btn-sm m-1"
-                                style="color: white"
-                            >
+                            <button @click="createUser()" class="btn btn-primary hover-background btn-sm m-1"
+                                style="color: white">
                                 Create
                             </button>
                         </div>

@@ -6,7 +6,7 @@ import CreateUserForm from "./Partials/CreateUserForm.vue";
 
 <template>
 
-    <Head title="Profile" />
+    <Head title="Create User" />
 
     <AuthenticatedLayout>
         <template #header>

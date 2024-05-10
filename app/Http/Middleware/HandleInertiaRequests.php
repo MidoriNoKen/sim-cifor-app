@@ -33,9 +33,9 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
-            'flash' => [
-                'alert' => $request->session()->get('alert'),
-            ],
+            // 'flash' => [
+            //     'alert' => $request->session()->get('alert'),
+            // ],
         ]);
     }
 }

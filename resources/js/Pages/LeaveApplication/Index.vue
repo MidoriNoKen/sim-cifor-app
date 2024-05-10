@@ -1,55 +1,20 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { Inertia } from "@inertiajs/inertia";
 import { Head, router, usePage } from "@inertiajs/vue3";
+import IndexButton from "./Partials/IndexButton.vue";
 
 const leaveApplications = usePage().props.leaveApplications;
 const loggedRole = usePage().props.loggedRole;
 const user = usePage().props.auth.user;
 
-const showLeaveApplication = (leaveApplication) => {
-    router.get(`/leave-applications/${leaveApplication.id}`, leaveApplication);
-};
-
 const createLeaveApplication = () => {
     router.get(`/leave-applications/create`);
 };
-
-const approveBySupervisor = (leaveApplication) => {
-    Inertia.post(
-        `/leave-applications/${leaveApplication.id}/approve-by-supervisor`,
-        {
-            onSuccess: (message) => {
-                console.log(message);
-            },
-            onError: (message) => {
-                console.log(message[0]);
-            },
-        }
-    );
-};
-
-const disapproveBySupervisor = (leaveApplication) => {
-    Inertia.post(
-        `/leave-applications/${leaveApplication.id}/disapprove-by-supervisor`
-    );
-};
-
-const approveByManager = (leaveApplication) => {
-    Inertia.post(
-        `/leave-applications/${leaveApplication.id}/approve-by-manager`,
-        leaveApplication
-    );
-};
-
-const disapproveByManager = (leaveApplication) => {
-    Inertia.post(
-        `/leave-applications/${leaveApplication.id}/disapprove-by-manager`,
-        leaveApplication
-    );
-};
 </script>
 <template>
+
+    <Head title="Leave Application" />
+
     <AuthenticatedLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
@@ -63,13 +28,11 @@ const disapproveByManager = (leaveApplication) => {
                         <table class="table align-middle text-center">
                             <thead>
                                 <tr>
-                                    <th
-                                        v-if="
-                                            user.position !== 'Junior' &&
-                                            loggedRole !== 'Staff'
-                                        "
-                                    >
-                                        >Applicant
+                                    <th v-if="
+                                        user.position !== 'Junior' &&
+                                        loggedRole !== 'Staff'
+                                    ">
+                                        Applicant
                                     </th>
                                     <th>Leave Type</th>
                                     <th>Status</th>
@@ -82,16 +45,11 @@ const disapproveByManager = (leaveApplication) => {
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr
-                                    v-for="leaveApplication in leaveApplications"
-                                    :key="leaveApplication.id"
-                                >
-                                    <td
-                                        v-if="
-                                            user.position !== 'Junior' &&
-                                            loggedRole !== 'Staff'
-                                        "
-                                    >
+                                <tr v-for="leaveApplication in leaveApplications" :key="leaveApplication.id">
+                                    <td v-if="
+                                        user.position !== 'Junior' &&
+                                        loggedRole !== 'Staff'
+                                    ">
                                         {{ leaveApplication.applicant }}
                                     </td>
                                     <td>{{ leaveApplication.leave_type }}</td>
@@ -104,91 +62,14 @@ const disapproveByManager = (leaveApplication) => {
                                     <td>{{ leaveApplication.supervisor }}</td>
                                     <td>{{ leaveApplication.manager }}</td>
                                     <td>
-                                        <button
-                                            @click="
-                                                showLeaveApplication(
-                                                    leaveApplication
-                                                )
-                                            "
-                                            class="btn btn-primary hover-background btn-sm m-1"
-                                            style="color: white"
-                                        >
-                                            Show
-                                        </button>
-                                        <button
-                                            @click="
-                                                approveBySupervisor(
-                                                    leaveApplication
-                                                )
-                                            "
-                                            v-if="
-                                                leaveApplication.isSupervisor &&
-                                                leaveApplication.status ===
-                                                    'Need Supervisor Approval'
-                                            "
-                                            class="btn btn-success hover-background btn-sm m-1"
-                                            style="color: white"
-                                        >
-                                            Approve
-                                        </button>
-                                        <button
-                                            @click="
-                                                disapproveBySupervisor(
-                                                    leaveApplication
-                                                )
-                                            "
-                                            v-else-if="
-                                                leaveApplication.isSupervisor &&
-                                                leaveApplication.status ===
-                                                    'Need Manager Approval'
-                                            "
-                                            class="btn btn-danger hover-background btn-sm m-1"
-                                            style="color: white"
-                                        >
-                                            Disapprove
-                                        </button>
-                                        <button
-                                            @click="
-                                                approveByManager(
-                                                    leaveApplication
-                                                )
-                                            "
-                                            v-else-if="
-                                                leaveApplication.isManager &&
-                                                leaveApplication.status ===
-                                                    'Need Manager Approval'
-                                            "
-                                            class="btn btn-success hover-background btn-sm m-1"
-                                            style="color: white"
-                                        >
-                                            Approve
-                                        </button>
-                                        <button
-                                            @click="
-                                                approveByManager(
-                                                    leaveApplication
-                                                )
-                                            "
-                                            v-else-if="
-                                                leaveApplication.isManager &&
-                                                leaveApplication.status ===
-                                                    'Approved'
-                                            "
-                                            class="btn btn-danger hover-background btn-sm m-1"
-                                            style="color: white"
-                                        >
-                                            Disapprove
-                                        </button>
+                                        <IndexButton :leaveApplication="leaveApplication" />
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                         <div class="text-center" v-if="loggedRole === 'Staff'">
-                            <button
-                                @click="createLeaveApplication()"
-                                class="btn btn-primary hover-background btn-sm m-1"
-                                style="color: white"
-                            >
+                            <button @click="createLeaveApplication()"
+                                class="btn btn-primary hover-background btn-sm m-1" style="color: white">
                                 Create
                             </button>
                         </div>

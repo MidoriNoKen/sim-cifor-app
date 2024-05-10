@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Enums\ApprovalStatusEnum;
-use App\Enums\ButtonStatusEnum;
 use App\Enums\PositionEnum;
 use App\Enums\RoleEnum;
 use App\Http\Controllers\Controller;
@@ -35,11 +34,9 @@ class LeaveApplicationController extends Controller
 
             if (Auth::user()->id == $leaveApplication->supervisor_id) {
                 $leaveApplication->isSupervisor = true;
-            }
-            else if (Auth::user()->id == $leaveApplication->manager_id) {
+            } else if (Auth::user()->id == $leaveApplication->manager_id) {
                 $leaveApplication->isManager = true;
-            }
-            else {
+            } else {
                 $leaveApplication->isManager = false;
                 $leaveApplication->isSupervisor = false;
             }
@@ -97,9 +94,8 @@ class LeaveApplicationController extends Controller
     public function approveBySupervisor($id)
     {
         $leaveApplication = LeaveApplication::find($id);
-        if(Auth::user()->role->name == RoleEnum::STAFF && Auth::user()->position == PositionEnum::SENIOR && Auth::user()->id == $leaveApplication->supervisor_id)
-        {
-            if($leaveApplication->status != ApprovalStatusEnum::SUPERVISOR_PENDING)
+        if (Auth::user()->role->name == RoleEnum::STAFF && Auth::user()->position == PositionEnum::SENIOR && Auth::user()->id == $leaveApplication->supervisor_id) {
+            if ($leaveApplication->status != ApprovalStatusEnum::SUPERVISOR_PENDING)
                 return redirect()->back()->withErrors(['This leave application has been approved or rejected.']);
             $leaveApplication->status = ApprovalStatusEnum::MANAGER_PENDING;
             $leaveApplication->save();
@@ -112,9 +108,8 @@ class LeaveApplicationController extends Controller
     public function disapproveBySupervisor($id)
     {
         $leaveApplication = LeaveApplication::find($id);
-        if(Auth::user()->role->name == RoleEnum::STAFF && Auth::user()->position == PositionEnum::SENIOR && Auth::user()->id == $leaveApplication->supervisor_id)
-        {
-            if($leaveApplication->status != ApprovalStatusEnum::MANAGER_PENDING)
+        if (Auth::user()->role->name == RoleEnum::STAFF && Auth::user()->position == PositionEnum::SENIOR && Auth::user()->id == $leaveApplication->supervisor_id) {
+            if ($leaveApplication->status != ApprovalStatusEnum::MANAGER_PENDING)
                 return redirect()->back()->withErrors(['This leave application has been approved or rejected.']);
             $leaveApplication->status = ApprovalStatusEnum::SUPERVISOR_PENDING;
             $leaveApplication->save();
@@ -122,5 +117,89 @@ class LeaveApplicationController extends Controller
             return Inertia::location(route('leaveApplications.index'));
         }
         return redirect()->back()->withErrors(['error', 'You are not allowed to approve this leave application.']);
+    }
+
+    public function approveByManager($id)
+    {
+        $leaveApplication = LeaveApplication::find($id);
+        if (Auth::user()->role->name == RoleEnum::MANAGER && Auth::user()->position == PositionEnum::MANAGER && Auth::user()->id == $leaveApplication->manager_id) {
+            if ($leaveApplication->status != ApprovalStatusEnum::MANAGER_PENDING)
+                return redirect()->back()->withErrors(['This leave application has been approved or rejected.']);
+            $leaveApplication->status = ApprovalStatusEnum::APPROVED;
+            $leaveApplication->save();
+
+            return Inertia::location(route('leaveApplications.index'));
+        }
+        return redirect()->back()->withErrors(['error', 'You are not allowed to approve this leave application.']);
+    }
+
+    public function disapproveByManager($id)
+    {
+        $leaveApplication = LeaveApplication::find($id);
+        if (Auth::user()->role->name == RoleEnum::MANAGER && Auth::user()->position == PositionEnum::MANAGER && Auth::user()->id == $leaveApplication->manager_id) {
+            if ($leaveApplication->status != ApprovalStatusEnum::APPROVED)
+                return redirect()->back()->withErrors(['This leave application has been approved or rejected.']);
+            $leaveApplication->status = ApprovalStatusEnum::MANAGER_PENDING;
+            $leaveApplication->save();
+
+            return Inertia::location(route('leaveApplications.index'));
+        }
+        return redirect()->back()->withErrors(['error', 'You are not allowed to approve this leave application.']);
+    }
+
+    public function reject($id)
+    {
+        $leaveApplication = LeaveApplication::find($id);
+
+        if (Auth::user()->id == $leaveApplication->supervisor_id) {
+            $leaveApplication->isSupervisor = true;
+        } else if (Auth::user()->id == $leaveApplication->manager_id) {
+            $leaveApplication->isManager = true;
+        } else {
+            $leaveApplication->isManager = false;
+            $leaveApplication->isSupervisor = false;
+        }
+
+        return Inertia::render('LeaveApplication/Reject')->with(['leaveApplication' => $leaveApplication]);
+    }
+
+    public function unreject($id)
+    {
+        $leaveApplication = LeaveApplication::find($id);
+        if (Auth::user()->role->name == RoleEnum::MANAGER && Auth::user()->position == PositionEnum::MANAGER && Auth::user()->id == $leaveApplication->manager_id) {
+            if ($leaveApplication->status != ApprovalStatusEnum::MANAGER_REJECTED)
+                return redirect()->back()->withErrors(['This leave application has been approved or rejected.']);
+            $leaveApplication->status = ApprovalStatusEnum::MANAGER_PENDING;
+            $leaveApplication->save();
+
+            return Inertia::location(route('leaveApplications.index'));
+        }
+
+        if (Auth::user()->role->name == RoleEnum::STAFF && Auth::user()->position == PositionEnum::SENIOR && Auth::user()->id == $leaveApplication->supervisor_id) {
+            if ($leaveApplication->status != ApprovalStatusEnum::SUPERVISOR_REJECTED)
+                return redirect()->back()->withErrors(['This leave application has been approved or rejected.']);
+            $leaveApplication->status = ApprovalStatusEnum::SUPERVISOR_PENDING;
+            $leaveApplication->save();
+
+            return Inertia::location(route('leaveApplications.index'));
+        }
+        return redirect()->back()->withErrors(['error', 'You are not allowed to approve this leave application.']);
+    }
+
+    public function ignore(Request $request, $id)
+    {
+        $leaveApplication = LeaveApplication::find($id);
+
+        if (Auth::user()->id == $leaveApplication->supervisor_id) {
+            $leaveApplication->status = ApprovalStatusEnum::SUPERVISOR_REJECTED;
+            $leaveApplication->supervisor_reject_reasons = $request->supervisor_reject_reasons;
+        } else if (Auth::user()->id == $leaveApplication->manager_id) {
+            $leaveApplication->status = ApprovalStatusEnum::MANAGER_REJECTED;
+            $leaveApplication->manager_reject_reasons = $request->manager_reject_reasons;
+        }
+
+        $leaveApplication->save();
+
+        return Redirect::route('leaveApplications.index');
     }
 }

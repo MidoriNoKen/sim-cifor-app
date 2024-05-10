@@ -12,7 +12,8 @@ const clearAlerts = () => {
 </script>
 
 <template>
-    <Head title="User" />
+
+    <Head title="Edit User" />
 
     <AuthenticatedLayout>
         <template #header>
@@ -22,11 +23,7 @@ const clearAlerts = () => {
         </template>
 
         <div class="py-12">
-            <Alert
-                :successMessage="$page.props.success"
-                :errorMessage="$page.props.error"
-                @close="clearAlerts"
-            />
+            <Alert :successMessage="$page.props.success" :errorMessage="$page.props.error" @close="clearAlerts" />
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
                 <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
                     <UpdateUserInformationForm />
