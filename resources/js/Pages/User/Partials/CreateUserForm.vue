@@ -1,22 +1,25 @@
 <script setup>
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
+import OptionManagerList from "@/Components/Options/OptionManagerList.vue";
+import OptionPositionList from "@/Components/Options/OptionPositionList.vue";
+import OptionRoleList from "@/Components/Options/OptionRoleList.vue";
+import OptionSupervisorList from "@/Components/Options/OptionSupervisorList.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
-import { Link, useForm, usePage } from "@inertiajs/vue3";
+import { useForm, usePage } from "@inertiajs/vue3";
 
-// const user = usePage().props.user;
-// const loggedRole = usePage().props.loggedRole;
+const loggedRole = usePage().props.loggedRole;
 
 const form = useForm({
-    name: null,
-    email: null,
-    password: null,
-    password_confirmation: null,
+    name: '',
+    email: '',
+    password: '',
+    password_confirmation: '',
     role: null,
     position: null,
-    supervisor_id: null,
-    manager_id: null,
+    supervisor: null,
+    manager: null,
     born_date: null,
 });
 </script>
@@ -68,63 +71,10 @@ const form = useForm({
             <InputError :message="form.errors.password_confirmation" class="mt-2" />
         </div>
 
-        <div class="mt-4">
-            <InputLabel for="role" value="Role" />
-
-            <select
-                class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                id="role" v-model="form.role" required>
-                <option value="" disabled>Select Role</option>
-                <option value="Manager">Manager</option>
-                <option value="Admin">Admin</option>
-                <option value="Staff">Staff</option>
-            </select>
-
-            <InputError class="mt-2" :message="form.errors.role" />
-        </div>
-
-        <div class="mt-4">
-            <InputLabel for="position_id" value="Position" />
-
-            <select
-                class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                id="position_id" v-model="form.position" required>
-                <option value="" disabled>Select Position</option>
-                <option value="Manager">Manager</option>
-                <option value="Supervisor">Supervisor</option>
-                <option value="Staff">Staff</option>
-            </select>
-
-            <InputError class="mt-2" :message="form.errors.position" />
-        </div>
-
-        <div class="mt-4">
-            <InputLabel for="supervisor_id" value="Supervisor" />
-
-            <select
-                class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                id="supervisor_id" v-model="form.supervisor_id">
-                <option value="" disabled>Select Position</option>
-                <option value="" id="test1">Test</option>
-                <option value="" id="test2">Test</option>
-            </select>
-
-            <InputError class="mt-2" :message="form.errors.supervisor_id" />
-        </div>
-
-        <div class="mt-4">
-            <InputLabel for="manager_id" value="Manager" />
-
-            <select id="manager_id"
-                class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                v-model="form.manager_id">
-                <option value="" disabled>Select Position</option>
-                <option value="" id="test1">Test</option>
-                <option value="" id="test2">Test</option>
-            </select>
-
-            <InputError class="mt-2" :message="form.errors.manager_id" />
-        </div>
+        <OptionRoleList :form="form" v-model="form.role" />
+        <OptionPositionList :form="form" v-model="form.position" />
+        <OptionSupervisorList :form="form" v-model="form.supervisor" />
+        <OptionManagerList :form="form" v-model="form.manager" />
 
         <div class="mt-4">
             <InputLabel for="born_date" value="Born Date" />

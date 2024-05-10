@@ -1,10 +1,11 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head } from "@inertiajs/vue3";
-import CreateLeaveApplicationForm from "../Profile/Partials/CreateLeaveApplicationForm.vue";
+import CreateLeaveApplicationForm from "../LeaveApplication/Partials/CreateLeaveApplicationForm.vue";
 </script>
 
 <template>
+
     <Head title="Leave Application" />
 
     <AuthenticatedLayout>

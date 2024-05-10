@@ -28,8 +28,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('/users', UserController::class);
 
     Route::get('/leave-applications', [LeaveApplicationController::class, 'index'])->name('leaveApplications.index');
-    Route::get('/leave-applications/{id}', [LeaveApplicationController::class, 'show'])->name('leaveApplications.detail');
     Route::get('/leave-applications/create', [LeaveApplicationController::class, 'create'])->name('leaveApplications.create');
+    Route::get('/leave-applications/{id}', [LeaveApplicationController::class, 'show'])->name('leaveApplications.detail');
     Route::post('/leave-applications', [LeaveApplicationController::class, 'store'])->name('leaveApplications.store');
 
     Route::resource('/travel-authorisations', null);

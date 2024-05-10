@@ -4,7 +4,6 @@ import { Head, router, usePage } from "@inertiajs/vue3";
 
 const leaveApplications = usePage().props.leaveApplications;
 const loggedRole = usePage().props.loggedRole;
-const user = usePage().props.auth.user;
 
 const showLeaveApplication = (leaveApplication) => {
     router.get(`/leave-applications/${leaveApplication.id}`, leaveApplication);
@@ -13,9 +12,19 @@ const showLeaveApplication = (leaveApplication) => {
 const createLeaveApplication = () => {
     router.get(`/leave-applications/create`);
 };
+
+const approveBySupervisor = (leaveApplication) => {
+    router.post(`/leave-applications/${leaveApplication.id}/approve-by-supervisor`, leaveApplication);
+};
+
+const approveByManager = (leaveApplication) => {
+    router.post(`/leave-applications/${leaveApplication.id}/approve-by-manager`, leaveApplication);
+};
+
 </script>
 
 <template>
+
     <Head title="Show Leave Applications" />
 
     <AuthenticatedLayout>
@@ -28,11 +37,10 @@ const createLeaveApplication = () => {
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
                 <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
                     <table
-                        class="table align-middle text-center table-responsive max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6"
-                    >
+                        class="table align-middle text-center table-responsive max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
                         <thead>
                             <tr>
-                                <th v-if="loggedRole === 'Admin'">Applicant</th>
+                                <th>Applicant</th>
                                 <th>Leave Type</th>
                                 <th>Status</th>
                                 <th>Start Date</th>
@@ -44,11 +52,8 @@ const createLeaveApplication = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr
-                                v-for="leaveApplication in leaveApplications"
-                                :key="leaveApplication.id"
-                            >
-                                <td v-if="loggedRole === 'Admin'">
+                            <tr v-for="leaveApplication in leaveApplications" :key="leaveApplication.id">
+                                <td>
                                     {{ leaveApplication.applicant }}
                                 </td>
                                 <td>{{ leaveApplication.leave_type }}</td>
@@ -59,27 +64,36 @@ const createLeaveApplication = () => {
                                 <td>{{ leaveApplication.supervisor }}</td>
                                 <td>{{ leaveApplication.manager }}</td>
                                 <td>
-                                    <button
-                                        @click="
-                                            showLeaveApplication(
-                                                leaveApplication
-                                            )
-                                        "
-                                        class="btn btn-primary hover-background btn-sm m-1"
-                                        style="color: white"
-                                    >
+                                    <button @click="
+                                        showLeaveApplication(
+                                            leaveApplication
+                                        )
+                                        " class="btn btn-primary hover-background btn-sm m-1" style="color: white">
                                         Show
+                                    </button>
+                                    <button @click="
+                                        approveBySupervisor(
+                                            leaveApplication
+                                        )
+                                        " v-if="leaveApplication.isSupervisor"
+                                        class="btn btn-success hover-background btn-sm m-1" style="color: white">
+                                        Approve
+                                    </button>
+                                    <button @click="
+                                        approveByManager(
+                                            leaveApplication
+                                        )
+                                        " v-else-if="leaveApplication.isManager"
+                                        class="btn btn-success hover-background btn-sm m-1" style="color: white">
+                                        Approve
                                     </button>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
-                    <div class="text-center" v-if="loggedRole !== 'Staff'">
-                        <button
-                            @click="createLeaveApplication()"
-                            class="btn btn-primary hover-background btn-sm m-1"
-                            style="color: white"
-                        >
+                    <div class="text-center" v-if="loggedRole === 'Staff'">
+                        <button @click="createLeaveApplication()" class="btn btn-primary hover-background btn-sm m-1"
+                            style="color: white">
                             Create
                         </button>
                     </div>

@@ -81,13 +81,6 @@ const user = usePage().props.auth.user;
                         Leave Application Detail
                     </h2>
                     <div class="row m-4">
-                        <div class="col-4">Applicant Name</div>
-                        <div class="col-4">:</div>
-                        <div class="col-4">
-                            {{ leaveApplication.applicant }}
-                        </div>
-                    </div>
-                    <div class="row m-4">
                         <div class="col-4">Status</div>
                         <div class="col-4">:</div>
                         <div class="col-4">

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\PositionEnum;
 use App\Enums\RoleEnum;
 use App\Http\Controllers\Controller;
 use App\Models\Role;
@@ -32,7 +33,27 @@ class UserController extends Controller
 
     public function create()
     {
-        return Inertia::render('User/Create');
+        $supervisors = User::whereIn('role_id', function ($query) {
+            $query->select('id')
+                ->from('roles')
+                ->where('name', RoleEnum::STAFF);
+        })
+            ->where('position', PositionEnum::SENIOR)
+            ->where('id', '!=', Auth::id())
+            ->get();
+
+        $managers = User::whereIn('role_id', function ($query) {
+            $query->select('id')
+                ->from('roles')
+                ->where('name', RoleEnum::MANAGER);
+        })
+            ->where('position', PositionEnum::MANAGER)
+            ->where('id', '!=', Auth::id())
+            ->get();
+
+        $loggedRole = Auth::user()->role->name;
+
+        return Inertia::render('User/Create')->with(['loggedRole' => $loggedRole, 'managers' => $managers, 'supervisors' => $supervisors]);
     }
 
     public function store(Request $request)
@@ -42,14 +63,16 @@ class UserController extends Controller
             'email' => 'required|string|lowercase|email|max:255|unique:' . User::class,
             'password' => ['required', 'confirmed', Password::defaults()],
             'password_confirmation' => 'required|string',
+            'role' => 'required|string',
             'position' => 'required|string',
-            'supervisor_id' => 'nullable|string',
-            'manager_id' => 'nullable|string',
+            'supervisor' => 'nullable|string',
+            'manager' => 'nullable|string',
             'born_date' => 'required|date',
-            'role' => 'required|string|exists:roles,name',
         ]);
 
         $role_id = Role::where('name', $request->role)->value('id');
+        $supervisor_id = $request->supervisor ? User::where('name', $request->supervisor)->value('id') : null;
+        $manager_id = $request->manager ? User::where('name', $request->manager)->value('id') : null;
 
         $user = User::create([
             'name' => $request->name,
@@ -57,8 +80,8 @@ class UserController extends Controller
             'password' => Hash::make($request->password),
             'password_confirmation' => $request->password_confirmation,
             'position' => $request->position,
-            'supervisor_id' => $request->supervisor_id,
-            'manager_id' => $request->manager_id,
+            'supervisor_id' => $supervisor_id,
+            'manager_id' => $manager_id,
             'born_date' => $request->born_date,
             'role_id' => $role_id
         ]);
@@ -70,10 +93,34 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
+        $managers = User::whereIn('role_id', function ($query) {
+            $query->select('id')
+                ->from('roles')
+                ->where('name', RoleEnum::MANAGER);
+        })
+            ->where('position', PositionEnum::MANAGER)
+            ->where('id', '!=', Auth::id())
+            ->get();
+
+        $supervisors = User::whereIn('role_id', function ($query) {
+            $query->select('id')
+                ->from('roles')
+                ->where('name', RoleEnum::STAFF);
+        })
+            ->where('position', PositionEnum::SENIOR)
+            ->where('id', '!=', Auth::id())
+            ->get();
+
+        $user->role = Role::find($user->role_id)->name;
+        $user->manager = $user->manager_id ? User::find($user->manager_id)->name : null;
+        $user->supervisor = $user->supervisor_id ? User::find($user->supervisor_id)->name : null;
+
         $loggedRole = Auth::user()->role->name;
         return Inertia::render('User/Edit', [
             'loggedRole' => $loggedRole,
             'user' => $user,
+            'managers' => $managers,
+            'supervisors' => $supervisors
         ]);
     }
 
@@ -82,25 +129,25 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:' . User::class . ',email,' . $user->id,
-            'password' => ['required', 'confirmed', Password::defaults()],
-            'password_confirmation' => 'required|string',
+            'role' => 'required|string',
             'position' => 'required|string',
-            'supervisor_id' => 'nullable|string',
-            'manager_id' => 'nullable|string',
+            'supervisor' => 'nullable|string',
+            'manager' => 'nullable|string',
             'born_date' => 'required|date',
-            'role_id' => 'required',
         ]);
+
+        $role_id = Role::where('name', $request->role)->value('id');
+        $supervisor_id = $request->supervisor ? User::where('name', $request->supervisor)->value('id') : null;
+        $manager_id = $request->manager ? User::where('name', $request->manager)->value('id') : null;
 
         $user->update([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'password_confirmation' => $request->password_confirmation,
+            'role_id' => $role_id,
             'position' => $request->position,
-            'supervisor_id' => $request->supervisor_id,
-            'manager_id' => $request->manager_id,
+            'supervisor_id' => $supervisor_id,
+            'manager_id' => $manager_id,
             'born_date' => $request->born_date,
-            'role_id' => $request->role_id
         ]);
 
         return Redirect::route('users.index');
