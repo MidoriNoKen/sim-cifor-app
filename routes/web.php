@@ -31,8 +31,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/leave-applications/create', [LeaveApplicationController::class, 'create'])->name('leaveApplications.create');
     Route::get('/leave-applications/{id}', [LeaveApplicationController::class, 'show'])->name('leaveApplications.detail');
     Route::post('/leave-applications', [LeaveApplicationController::class, 'store'])->name('leaveApplications.store');
+    Route::post('/leave-applications/{id}/approve-by-supervisor', [LeaveApplicationController::class, 'approveBySupervisor'])->name('leaveApplications.approveBySupervisor');
+    Route::post('/leave-applications/{id}/disapprove-by-supervisor', [LeaveApplicationController::class, 'disapproveBySupervisor'])->name('leaveApplications.disapproveBySupervisor');
 
     Route::resource('/travel-authorisations', null);
+
 });
 
 

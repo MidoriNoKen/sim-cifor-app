@@ -20,7 +20,6 @@ const createUser = () => {
 </script>
 
 <template>
-
     <Head title="Profile" />
 
     <AuthenticatedLayout>
@@ -32,47 +31,56 @@ const createUser = () => {
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
                 <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                    <table
-                        class="table align-middle text-center table-responsive max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Role</th>
-                                <th>Position</th>
-                                <th>Supervisor</th>
-                                <th>Manager</th>
-                                <th>Born Date</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="user in users" :key="user.id">
-                                <td>{{ user.name }}</td>
-                                <td>{{ user.email }}</td>
-                                <td>{{ user.role }}</td>
-                                <td>{{ user.position }}</td>
-                                <td>{{ user.supervisor }}</td>
-                                <td>{{ user.manager }}</td>
-                                <td>{{ user.born_date }}</td>
-                                <td>
-                                    <button @click="editUser(user)" class="btn btn-warning hover-background btn-sm m-1"
-                                        style="color: white">
-                                        Edit
-                                    </button>
-                                    <button @click="deleteUser(user)"
-                                        class="btn btn-danger hover-background btn-sm m-1">
-                                        Delete
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div class="text-center">
-                        <button @click="createUser()" class="btn btn-primary hover-background btn-sm m-1"
-                            style="color: white">
-                            Create
-                        </button>
+                    <div class="table-responsive">
+                        <table class="table align-middle text-center">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Position</th>
+                                    <th>Supervisor</th>
+                                    <th>Manager</th>
+                                    <th>Born Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="user in users" :key="user.id">
+                                    <td>{{ user.name }}</td>
+                                    <td>{{ user.email }}</td>
+                                    <td>{{ user.role }}</td>
+                                    <td>{{ user.position }}</td>
+                                    <td>{{ user.supervisor }}</td>
+                                    <td>{{ user.manager }}</td>
+                                    <td>{{ user.born_date }}</td>
+                                    <td>
+                                        <button
+                                            @click="editUser(user)"
+                                            class="btn btn-warning hover-background btn-sm m-1"
+                                            style="color: white"
+                                        >
+                                            Edit
+                                        </button>
+                                        <button
+                                            @click="deleteUser(user)"
+                                            class="btn btn-danger hover-background btn-sm m-1"
+                                        >
+                                            Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="text-center">
+                            <button
+                                @click="createUser()"
+                                class="btn btn-primary hover-background btn-sm m-1"
+                                style="color: white"
+                            >
+                                Create
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

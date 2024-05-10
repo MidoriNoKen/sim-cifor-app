@@ -3,8 +3,8 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, router, usePage } from "@inertiajs/vue3";
 
 const leaveApplication = usePage().props.leaveApplication;
+const user = usePage().props.user;
 const loggedRole = usePage().props.loggedRole;
-const user = usePage().props.auth.user;
 </script>
 
 <template>
