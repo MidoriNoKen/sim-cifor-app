@@ -1,81 +1,86 @@
 <script setup>
 import { router } from "@inertiajs/vue3";
 import { defineProps } from "vue";
-const props = defineProps(["leaveApplication"]);
+const props = defineProps(["travelAuthorisation"]);
 
-const showLeaveApplication = (leaveApplication) => {
-    router.get(`/leave-applications/${leaveApplication.id}`, leaveApplication);
-};
-
-const approveBySupervisor = (leaveApplication) => {
-    router.post(
-        `/leave-applications/${leaveApplication.id}/approve-by-supervisor`
+const showTravelAuthorisation = (travelAuthorisation) => {
+    router.get(
+        `/travel-authorisations/${travelAuthorisation.id}`,
+        travelAuthorisation
     );
 };
 
-const disapproveBySupervisor = (leaveApplication) => {
+const approveBySupervisor = (travelAuthorisation) => {
     router.post(
-        `/leave-applications/${leaveApplication.id}/disapprove-by-supervisor`
+        `/travel-authorisations/${travelAuthorisation.id}/approve-by-supervisor`
     );
 };
 
-const rejectBySupervisor = (leaveApplication) => {
-    router.get(`/leave-applications/${leaveApplication.id}/reject`);
-};
-
-const unrejectBySupervisor = (leaveApplication) => {
-    router.post(`/leave-applications/${leaveApplication.id}/unreject`);
-};
-
-const approveByManager = (leaveApplication) => {
+const disapproveBySupervisor = (travelAuthorisation) => {
     router.post(
-        `/leave-applications/${leaveApplication.id}/approve-by-manager`
+        `/travel-authorisations/${travelAuthorisation.id}/disapprove-by-supervisor`
     );
 };
 
-const disapproveByManager = (leaveApplication) => {
+const rejectBySupervisor = (travelAuthorisation) => {
+    router.get(`/travel-authorisations/${travelAuthorisation.id}/reject`);
+};
+
+const unrejectBySupervisor = (travelAuthorisation) => {
+    router.post(`/travel-authorisations/${travelAuthorisation.id}/unreject`);
+};
+
+const approveByManager = (travelAuthorisation) => {
     router.post(
-        `/leave-applications/${leaveApplication.id}/disapprove-by-manager`
+        `/travel-authorisations/${travelAuthorisation.id}/approve-by-manager`
     );
 };
 
-const rejectByManager = (leaveApplication) => {
-    router.get(`/leave-applications/${leaveApplication.id}/reject`);
+const disapproveByManager = (travelAuthorisation) => {
+    router.post(
+        `/travel-authorisations/${travelAuthorisation.id}/disapprove-by-manager`
+    );
 };
 
-const unrejectByManager = (leaveApplication) => {
-    router.post(`/leave-applications/${leaveApplication.id}/unreject`);
+const rejectByManager = (travelAuthorisation) => {
+    router.get(`/travel-authorisations/${travelAuthorisation.id}/reject`);
+};
+
+const unrejectByManager = (travelAuthorisation) => {
+    router.post(`/travel-authorisations/${travelAuthorisation.id}/unreject`);
 };
 </script>
 
 <template>
     <button
-        @click="showLeaveApplication(leaveApplication)"
+        @click="showTravelAuthorisation(travelAuthorisation)"
         class="btn btn-primary hover-background btn-sm m-1"
         style="color: white"
     >
         Show
     </button>
-    <div v-if="leaveApplication.isSupervisor">
-        <span v-if="leaveApplication.status === 'Need Supervisor Approval'">
+    <div v-if="travelAuthorisation.isSupervisor">
+        <span v-if="travelAuthorisation.status === 'Need Supervisor Approval'">
             <button
-                @click="approveBySupervisor(leaveApplication)"
+                @click="approveBySupervisor(travelAuthorisation)"
                 class="btn btn-success hover-background btn-sm m-1"
                 style="color: white"
             >
                 Approve
             </button>
             <button
-                @click="rejectBySupervisor(leaveApplication)"
+                @click="rejectBySupervisor(travelAuthorisation)"
                 class="btn btn-warning hover-background btn-sm m-1"
                 style="color: white"
             >
                 Reject
             </button>
         </span>
-        <span v-else-if="leaveApplication.status === 'Need Manager Approval'">
+        <span
+            v-else-if="travelAuthorisation.status === 'Need Manager Approval'"
+        >
             <button
-                @click="disapproveBySupervisor(leaveApplication)"
+                @click="disapproveBySupervisor(travelAuthorisation)"
                 class="btn btn-danger hover-background btn-sm m-1"
                 style="color: white"
             >
@@ -94,7 +99,7 @@ const unrejectByManager = (leaveApplication) => {
                 Reject
             </button>
         </span>
-        <span v-else-if="leaveApplication.status === 'Approved'">
+        <span v-else-if="travelAuthorisation.status === 'Approved'">
             <button
                 class="btn btn-sm m-1"
                 style="
@@ -120,7 +125,7 @@ const unrejectByManager = (leaveApplication) => {
                 Reject
             </button>
         </span>
-        <span v-else-if="leaveApplication.status === 'Rejected by Manager'">
+        <span v-else-if="travelAuthorisation.status === 'Rejected by Manager'">
             <button
                 class="btn btn-danger hover-background btn-sm m-1"
                 style="color: white"
@@ -136,7 +141,9 @@ const unrejectByManager = (leaveApplication) => {
                 Manager Rejected
             </button>
         </span>
-        <span v-else-if="leaveApplication.status === 'Rejected by Supervisor'">
+        <span
+            v-else-if="travelAuthorisation.status === 'Rejected by Supervisor'"
+        >
             <button
                 class="btn btn-danger hover-background btn-sm m-1"
                 style="color: white"
@@ -145,7 +152,7 @@ const unrejectByManager = (leaveApplication) => {
                 Rejected
             </button>
             <button
-                @click="unrejectBySupervisor(leaveApplication)"
+                @click="unrejectBySupervisor(travelAuthorisation)"
                 class="btn btn-danger hover-background btn-sm m-1"
                 style="color: white"
             >
@@ -153,8 +160,8 @@ const unrejectByManager = (leaveApplication) => {
             </button>
         </span>
     </div>
-    <div v-else-if="leaveApplication.isManager">
-        <span v-if="leaveApplication.status === 'Need Supervisor Approval'">
+    <div v-else-if="travelAuthorisation.isManager">
+        <span v-if="travelAuthorisation.status === 'Need Supervisor Approval'">
             <button
                 class="btn btn-sm m-1"
                 style="
@@ -180,25 +187,27 @@ const unrejectByManager = (leaveApplication) => {
                 Reject
             </button>
         </span>
-        <span v-else-if="leaveApplication.status === 'Need Manager Approval'">
+        <span
+            v-else-if="travelAuthorisation.status === 'Need Manager Approval'"
+        >
             <button
-                @click="approveByManager(leaveApplication)"
+                @click="approveByManager(travelAuthorisation)"
                 class="btn btn-success hover-background btn-sm m-1"
                 style="color: white"
             >
                 Approve
             </button>
             <button
-                @click="rejectByManager(leaveApplication)"
+                @click="rejectByManager(travelAuthorisation)"
                 class="btn btn-success hover-background btn-sm m-1"
                 style="color: white"
             >
                 Reject
             </button>
         </span>
-        <span v-else-if="leaveApplication.status === 'Approved'">
+        <span v-else-if="travelAuthorisation.status === 'Approved'">
             <button
-                @click="disapproveByManager(leaveApplication)"
+                @click="disapproveByManager(travelAuthorisation)"
                 class="btn btn-danger hover-background btn-sm m-1"
                 style="color: white"
             >
@@ -217,7 +226,9 @@ const unrejectByManager = (leaveApplication) => {
                 Reject
             </button>
         </span>
-        <span v-else-if="leaveApplication.status === 'Rejected by Supervisor'">
+        <span
+            v-else-if="travelAuthorisation.status === 'Rejected by Supervisor'"
+        >
             <button
                 class="btn btn-danger hover-background btn-sm m-1"
                 style="color: white"
@@ -232,7 +243,7 @@ const unrejectByManager = (leaveApplication) => {
                 Supervisor Rejected
             </button>
         </span>
-        <span v-else-if="leaveApplication.status === 'Rejected by Manager'">
+        <span v-else-if="travelAuthorisation.status === 'Rejected by Manager'">
             <button
                 class="btn btn-danger hover-background btn-sm m-1"
                 style="color: white"
@@ -241,7 +252,7 @@ const unrejectByManager = (leaveApplication) => {
                 Rejected
             </button>
             <button
-                @click="unrejectByManager(leaveApplication)"
+                @click="unrejectByManager(travelAuthorisation)"
                 class="btn btn-danger hover-background btn-sm m-1"
                 style="color: white"
             >

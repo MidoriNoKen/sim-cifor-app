@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\LeaveApplicationController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TravelAuthorisationController;
 use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -28,8 +29,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('/users', UserController::class);
 
     Route::get('/leave-applications', [LeaveApplicationController::class, 'index'])->name('leaveApplications.index');
-    Route::get('/leave-applications/{id}', [LeaveApplicationController::class, 'show'])->name('leaveApplications.detail');
     Route::get('/leave-applications/create', [LeaveApplicationController::class, 'create'])->name('leaveApplications.create');
+    Route::get('/leave-applications/{id}', [LeaveApplicationController::class, 'show'])->name('leaveApplications.detail');
     Route::post('/leave-applications', [LeaveApplicationController::class, 'store'])->name('leaveApplications.store');
     Route::get('/leave-applications/{id}/reject', [LeaveApplicationController::class, 'reject'])->name('leaveApplications.reject');
     Route::post('/leave-applications/{id}/unreject', [LeaveApplicationController::class, 'unreject'])->name('leaveApplications.unreject');
@@ -39,7 +40,17 @@ Route::middleware('auth')->group(function () {
     Route::post('/leave-applications/{id}/approve-by-manager', [LeaveApplicationController::class, 'approveByManager'])->name('leaveApplications.approveByManager');
     Route::post('/leave-applications/{id}/disapprove-by-manager', [LeaveApplicationController::class, 'disapproveByManager'])->name('leaveApplications.disapproveByManager');
 
-    Route::resource('/travel-authorisations', null);
+    Route::get('/travel-authorisations', [TravelAuthorisationController::class, 'index'])->name('travelAuthorisations.index');
+    Route::get('/travel-authorisations/create', [TravelAuthorisationController::class, 'create'])->name('travelAuthorisations.create');
+    Route::get('/travel-authorisations/{id}', [TravelAuthorisationController::class, 'show'])->name('travelAuthorisations.detail');
+    Route::post('/travel-authorisations', [TravelAuthorisationController::class, 'store'])->name('travelAuthorisations.store');
+    Route::get('/travel-authorisations/{id}/reject', [TravelAuthorisationController::class, 'reject'])->name('travelAuthorisations.reject');
+    Route::post('/travel-authorisations/{id}/unreject', [TravelAuthorisationController::class, 'unreject'])->name('travelAuthorisations.unreject');
+    Route::post('/travel-authorisations/{id}/reject', [TravelAuthorisationController::class, 'ignore'])->name('travelAuthorisations.ignore');
+    Route::post('/travel-authorisations/{id}/approve-by-supervisor', [TravelAuthorisationController::class, 'approveBySupervisor'])->name('travelAuthorisations.approveBySupervisor');
+    Route::post('/travel-authorisations/{id}/disapprove-by-supervisor', [TravelAuthorisationController::class, 'disapproveBySupervisor'])->name('travelAuthorisations.disapproveBySupervisor');
+    Route::post('/travel-authorisations/{id}/approve-by-manager', [TravelAuthorisationController::class, 'approveByManager'])->name('travelAuthorisations.approveByManager');
+    Route::post('/travel-authorisations/{id}/disapprove-by-manager', [TravelAuthorisationController::class, 'disapproveByManager'])->name('travelAuthorisations.disapproveByManager');
 });
 
 

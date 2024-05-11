@@ -54,10 +54,10 @@ const showingNavigationDropdown = ref(false);
                                     Leave Applications
                                 </NavLink>
                                 <NavLink
-                                    :href="route('leaveApplications.index')"
+                                    :href="route('travelAuthorisations.index')"
                                     :active="
                                         route().current(
-                                            'leaveApplications.index'
+                                            'travelAuthorisations.index'
                                         )
                                     "
                                 >
