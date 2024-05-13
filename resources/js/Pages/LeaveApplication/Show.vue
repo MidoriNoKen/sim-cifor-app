@@ -115,6 +115,20 @@ const loggedRole = usePage().props.loggedRole;
                             {{ leaveApplication.leave_type }}
                         </div>
                     </div>
+                    <div class="row m-4">
+                        <div class="col-4">Supervisor Reject Reasons</div>
+                        <div class="col-4">:</div>
+                        <div class="col-4">
+                            {{ leaveApplication.supervisor_reject_reasons }}
+                        </div>
+                    </div>
+                    <div class="row m-4">
+                        <div class="col-4">Manager Reject Reasons</div>
+                        <div class="col-4">:</div>
+                        <div class="col-4">
+                            {{ leaveApplication.manager_reject_reasons }}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

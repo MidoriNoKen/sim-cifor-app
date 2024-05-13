@@ -12,7 +12,6 @@ const createLeaveApplication = () => {
 };
 </script>
 <template>
-
     <Head title="Leave Application" />
 
     <AuthenticatedLayout>
@@ -28,10 +27,12 @@ const createLeaveApplication = () => {
                         <table class="table align-middle text-center">
                             <thead>
                                 <tr>
-                                    <th v-if="
-                                        user.position !== 'Junior' &&
-                                        loggedRole !== 'Staff'
-                                    ">
+                                    <th
+                                        v-if="
+                                            user.position !== 'Junior' &&
+                                            loggedRole !== 'Staff'
+                                        "
+                                    >
                                         Applicant
                                     </th>
                                     <th>Leave Type</th>
@@ -45,11 +46,16 @@ const createLeaveApplication = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="leaveApplication in leaveApplications" :key="leaveApplication.id">
-                                    <td v-if="
-                                        user.position !== 'Junior' &&
-                                        loggedRole !== 'Staff'
-                                    ">
+                                <tr
+                                    v-for="leaveApplication in leaveApplications"
+                                    :key="leaveApplication.id"
+                                >
+                                    <td
+                                        v-if="
+                                            user.position !== 'Junior' &&
+                                            loggedRole !== 'Staff'
+                                        "
+                                    >
                                         {{ leaveApplication.applicant }}
                                     </td>
                                     <td>{{ leaveApplication.leave_type }}</td>
@@ -59,17 +65,24 @@ const createLeaveApplication = () => {
                                     <td>
                                         {{ leaveApplication.day_accumulation }}
                                     </td>
-                                    <td>{{ leaveApplication.supervisor }}</td>
-                                    <td>{{ leaveApplication.manager }}</td>
                                     <td>
-                                        <IndexButton :leaveApplication="leaveApplication" />
+                                        {{ leaveApplication.supervisor.name }}
+                                    </td>
+                                    <td>{{ leaveApplication.manager.name }}</td>
+                                    <td>
+                                        <IndexButton
+                                            :leaveApplication="leaveApplication"
+                                        />
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                         <div class="text-center" v-if="loggedRole === 'Staff'">
-                            <button @click="createLeaveApplication()"
-                                class="btn btn-primary hover-background btn-sm m-1" style="color: white">
+                            <button
+                                @click="createLeaveApplication()"
+                                class="btn btn-primary hover-background btn-sm m-1"
+                                style="color: white"
+                            >
                                 Create
                             </button>
                         </div>

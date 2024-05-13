@@ -1,8 +1,9 @@
 <script setup>
-import { Head, router, usePage } from "@inertiajs/vue3";
+import { Head, usePage } from "@inertiajs/vue3";
 import { useForm } from "@inertiajs/inertia-vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
+import { Inertia } from "@inertiajs/inertia";
 
 const loggedRole = usePage().props.loggedRole;
 const leaveApplication = usePage().props.leaveApplication;
@@ -17,7 +18,7 @@ const handleSubmit = () => {
         supervisor_reject_reasons: form.supervisor_reject_reasons,
         manager_reject_reasons: form.manager_reject_reasons,
     };
-    router.post(`/leave-applications/${leaveApplication.id}/reject`, data);
+    Inertia.post(`/leave-applications/${leaveApplication.id}/reject`, data);
 };
 </script>
 

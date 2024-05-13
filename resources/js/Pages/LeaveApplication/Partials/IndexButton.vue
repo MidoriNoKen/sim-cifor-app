@@ -1,4 +1,5 @@
 <script setup>
+import { Inertia } from "@inertiajs/inertia";
 import { router } from "@inertiajs/vue3";
 import { defineProps } from "vue";
 const props = defineProps(["leaveApplication"]);
@@ -8,13 +9,13 @@ const showLeaveApplication = (leaveApplication) => {
 };
 
 const approveBySupervisor = (leaveApplication) => {
-    router.post(
+    Inertia.post(
         `/leave-applications/${leaveApplication.id}/approve-by-supervisor`
     );
 };
 
 const disapproveBySupervisor = (leaveApplication) => {
-    router.post(
+    Inertia.post(
         `/leave-applications/${leaveApplication.id}/disapprove-by-supervisor`
     );
 };
@@ -24,17 +25,17 @@ const rejectBySupervisor = (leaveApplication) => {
 };
 
 const unrejectBySupervisor = (leaveApplication) => {
-    router.post(`/leave-applications/${leaveApplication.id}/unreject`);
+    Inertia.post(`/leave-applications/${leaveApplication.id}/unreject`);
 };
 
 const approveByManager = (leaveApplication) => {
-    router.post(
+    Inertia.post(
         `/leave-applications/${leaveApplication.id}/approve-by-manager`
     );
 };
 
 const disapproveByManager = (leaveApplication) => {
-    router.post(
+    Inertia.post(
         `/leave-applications/${leaveApplication.id}/disapprove-by-manager`
     );
 };
@@ -44,7 +45,7 @@ const rejectByManager = (leaveApplication) => {
 };
 
 const unrejectByManager = (leaveApplication) => {
-    router.post(`/leave-applications/${leaveApplication.id}/unreject`);
+    Inertia.post(`/leave-applications/${leaveApplication.id}/unreject`);
 };
 </script>
 
