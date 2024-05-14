@@ -52,7 +52,7 @@ const form = useForm({
 
             <input
                 id="start_date"
-                type="date"
+                type="datetime-local"
                 class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                 v-model="form.start_date"
                 required
@@ -64,7 +64,7 @@ const form = useForm({
 
             <input
                 id="end_date"
-                type="date"
+                type="datetime-local"
                 class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                 v-model="form.end_date"
                 required

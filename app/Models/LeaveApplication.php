@@ -19,7 +19,7 @@ class LeaveApplication extends Model
         'manager_reject_reasons',
         'start_date',
         'end_date',
-        'day_accumulation',
+        'accumulation',
         'leave_type',
     ];
 

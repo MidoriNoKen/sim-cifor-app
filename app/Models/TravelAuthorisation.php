@@ -14,26 +14,18 @@ class TravelAuthorisation extends Model
         'applicant_id',
         'status',
         'supervisor_id',
-        'supervisor_approval',
         'supervisor_reject_reasons',
         'manager_id',
-        'manager_approval',
         'manager_reject_reasons',
         'finance_id',
-        'finance_approval',
         'finance_reject_reasons',
         'unit_id',
         'transport_type',
         'start_date',
         'end_date',
-        'day_accumulation',
+        'accumulation',
         'accomodation_detail',
         'travel_reasons',
-    ];
-
-    protected $casts = [
-        'start_date' => 'datetime',
-        'end_date' => 'datetime',
     ];
 
     public function applicant()

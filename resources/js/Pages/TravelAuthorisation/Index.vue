@@ -1,10 +1,22 @@
+<script setup>
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import { Head, router, usePage } from "@inertiajs/vue3";
+import IndexButton from "./Partials/IndexButton.vue";
+
+const { travelAuthorisations, loggedRole } = usePage().props;
+const user = usePage().props.auth.user;
+
+const createTravelAuthorisation = () => {
+    router.get(`/travel-authorisations/create`);
+};
+</script>
 <template>
-    <Head title="Travel Authorisation" />
+    <Head title="Leave Application" />
 
     <AuthenticatedLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Travel Authorisation List
+                Leave Application List
             </h2>
         </template>
         <div class="py-12">
@@ -22,11 +34,11 @@
                                     >
                                         Applicant
                                     </th>
-                                    <th>Transport Type</th>
+                                    <th>Transport</th>
                                     <th>Status</th>
                                     <th>Start Date</th>
                                     <th>End Date</th>
-                                    <th>Day Accumulation</th>
+                                    <th>Accumulation</th>
                                     <th>Supervisor</th>
                                     <th>Manager</th>
                                     <th>Action</th>
@@ -43,7 +55,7 @@
                                             loggedRole !== 'Staff'
                                         "
                                     >
-                                        {{ travelAuthorisation.applicant }}
+                                        {{ travelAuthorisation.applicant.name }}
                                     </td>
                                     <td>
                                         {{ travelAuthorisation.transport_type }}
@@ -54,14 +66,24 @@
                                     </td>
                                     <td>{{ travelAuthorisation.end_date }}</td>
                                     <td>
+                                        {{ travelAuthorisation.accumulation }}
+                                    </td>
+                                    <td>
                                         {{
-                                            travelAuthorisation.day_accumulation
+                                            travelAuthorisation.supervisor
+                                                ? travelAuthorisation.supervisor
+                                                      .name
+                                                : ""
                                         }}
                                     </td>
                                     <td>
-                                        {{ travelAuthorisation.supervisor }}
+                                        {{
+                                            travelAuthorisation.manager
+                                                ? travelAuthorisation.manager
+                                                      .name
+                                                : ""
+                                        }}
                                     </td>
-                                    <td>{{ travelAuthorisation.manager }}</td>
                                     <td>
                                         <IndexButton
                                             :travelAuthorisation="
@@ -74,7 +96,7 @@
                         </table>
                         <div class="text-center" v-if="loggedRole === 'Staff'">
                             <button
-                                @click="createTravelAuthorisation"
+                                @click="createTravelAuthorisation()"
                                 class="btn btn-primary hover-background btn-sm m-1"
                                 style="color: white"
                             >
@@ -87,15 +109,3 @@
         </div>
     </AuthenticatedLayout>
 </template>
-
-<script setup>
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { Head, router, usePage } from "@inertiajs/vue3";
-import IndexButton from "./Partials/IndexButton.vue";
-const { travelAuthorisations, loggedRole } = usePage().props;
-const user = usePage().props.auth.user;
-
-const createTravelAuthorisation = () => {
-    router.get(`/travel-authorisations/create`);
-};
-</script>

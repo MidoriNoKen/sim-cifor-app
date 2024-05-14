@@ -8,4 +8,5 @@ class PositionEnum
     public const SENIOR = 'Senior';
     public const MANAGER = 'Manager';
     public const DIRECTOR = 'Director';
+    public const FINANCE = 'Finance';
 }

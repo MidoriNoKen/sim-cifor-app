@@ -8,43 +8,19 @@ const showLeaveApplication = (leaveApplication) => {
     router.get(`/leave-applications/${leaveApplication.id}`, leaveApplication);
 };
 
-const approveBySupervisor = (leaveApplication) => {
-    Inertia.post(
-        `/leave-applications/${leaveApplication.id}/approve-by-supervisor`
-    );
+const approve = (leaveApplication) => {
+    Inertia.post(`/leave-applications/${leaveApplication.id}/approve`);
 };
 
-const disapproveBySupervisor = (leaveApplication) => {
-    Inertia.post(
-        `/leave-applications/${leaveApplication.id}/disapprove-by-supervisor`
-    );
+const disapprove = (leaveApplication) => {
+    Inertia.post(`/leave-applications/${leaveApplication.id}/disapprove`);
 };
 
-const rejectBySupervisor = (leaveApplication) => {
+const reject = (leaveApplication) => {
     router.get(`/leave-applications/${leaveApplication.id}/reject`);
 };
 
-const unrejectBySupervisor = (leaveApplication) => {
-    Inertia.post(`/leave-applications/${leaveApplication.id}/unreject`);
-};
-
-const approveByManager = (leaveApplication) => {
-    Inertia.post(
-        `/leave-applications/${leaveApplication.id}/approve-by-manager`
-    );
-};
-
-const disapproveByManager = (leaveApplication) => {
-    Inertia.post(
-        `/leave-applications/${leaveApplication.id}/disapprove-by-manager`
-    );
-};
-
-const rejectByManager = (leaveApplication) => {
-    router.get(`/leave-applications/${leaveApplication.id}/reject`);
-};
-
-const unrejectByManager = (leaveApplication) => {
+const unreject = (leaveApplication) => {
     Inertia.post(`/leave-applications/${leaveApplication.id}/unreject`);
 };
 </script>
@@ -60,14 +36,14 @@ const unrejectByManager = (leaveApplication) => {
     <div v-if="leaveApplication.isSupervisor">
         <span v-if="leaveApplication.status === 'Need Supervisor Approval'">
             <button
-                @click="approveBySupervisor(leaveApplication)"
+                @click="approve(leaveApplication)"
                 class="btn btn-success hover-background btn-sm m-1"
                 style="color: white"
             >
                 Approve
             </button>
             <button
-                @click="rejectBySupervisor(leaveApplication)"
+                @click="reject(leaveApplication)"
                 class="btn btn-warning hover-background btn-sm m-1"
                 style="color: white"
             >
@@ -76,7 +52,7 @@ const unrejectByManager = (leaveApplication) => {
         </span>
         <span v-else-if="leaveApplication.status === 'Need Manager Approval'">
             <button
-                @click="disapproveBySupervisor(leaveApplication)"
+                @click="disapprove(leaveApplication)"
                 class="btn btn-danger hover-background btn-sm m-1"
                 style="color: white"
             >
@@ -146,7 +122,7 @@ const unrejectByManager = (leaveApplication) => {
                 Rejected
             </button>
             <button
-                @click="unrejectBySupervisor(leaveApplication)"
+                @click="unreject(leaveApplication)"
                 class="btn btn-danger hover-background btn-sm m-1"
                 style="color: white"
             >
@@ -183,14 +159,14 @@ const unrejectByManager = (leaveApplication) => {
         </span>
         <span v-else-if="leaveApplication.status === 'Need Manager Approval'">
             <button
-                @click="approveByManager(leaveApplication)"
+                @click="approve(leaveApplication)"
                 class="btn btn-success hover-background btn-sm m-1"
                 style="color: white"
             >
                 Approve
             </button>
             <button
-                @click="rejectByManager(leaveApplication)"
+                @click="reject(leaveApplication)"
                 class="btn btn-success hover-background btn-sm m-1"
                 style="color: white"
             >
@@ -199,7 +175,7 @@ const unrejectByManager = (leaveApplication) => {
         </span>
         <span v-else-if="leaveApplication.status === 'Approved'">
             <button
-                @click="disapproveByManager(leaveApplication)"
+                @click="disapprove(leaveApplication)"
                 class="btn btn-danger hover-background btn-sm m-1"
                 style="color: white"
             >
@@ -242,7 +218,7 @@ const unrejectByManager = (leaveApplication) => {
                 Rejected
             </button>
             <button
-                @click="unrejectByManager(leaveApplication)"
+                @click="unreject(leaveApplication)"
                 class="btn btn-danger hover-background btn-sm m-1"
                 style="color: white"
             >

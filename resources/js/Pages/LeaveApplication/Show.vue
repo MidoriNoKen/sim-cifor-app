@@ -105,7 +105,7 @@ const loggedRole = usePage().props.loggedRole;
                         <div class="col-4">Accumulation</div>
                         <div class="col-4">:</div>
                         <div class="col-4">
-                            {{ leaveApplication.day_accumulation }}
+                            {{ leaveApplication.accumulation }}
                         </div>
                     </div>
                     <div class="row m-4">

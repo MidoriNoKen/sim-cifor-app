@@ -5,11 +5,11 @@ namespace App\Http\Services;
 use App\Enums\ApprovalStatusEnum;
 use App\Enums\PositionEnum;
 use App\Enums\RoleEnum;
-use App\Models\LeaveApplication;
+use App\Models\TravelAuthorisation;
 use App\Utils\Util;
 use Exception;
 
-class LeaveApplicationService
+class TravelAuthorisationService
 {
     private $user;
 
@@ -20,7 +20,7 @@ class LeaveApplicationService
 
     public function getById($id)
     {
-        return LeaveApplication::find($id);
+        return TravelAuthorisation::find($id);
     }
 
     public function getAllByLoggedPosition()
@@ -30,7 +30,7 @@ class LeaveApplicationService
         $position = $user->position;
         $userId = $user->id;
 
-        $query = LeaveApplication::query()->with(["applicant", "supervisor", "manager"]);
+        $query = TravelAuthorisation::query()->with(["applicant", "supervisor", "manager"]);
 
         if ($roleName === RoleEnum::STAFF && $position === PositionEnum::SENIOR)
         $query->where("applicant_id", $userId)->orWhere("supervisor_id", $userId);
@@ -45,29 +45,36 @@ class LeaveApplicationService
     {
         try {
             $validation = $request->validate([
-                'leave_type' => 'required|string',
+                'transport_type' => 'required|string',
                 'start_date' => 'required|string',
                 'end_date' => 'required|string',
+                'accomodation_detail' => 'required|string',
+                'travel_reasons' => 'required|string',
             ]);
 
             if (!$validation) {
                 Throw new Exception("Invalid input data.");
             }
 
-            $leaveApplication = LeaveApplication::create([
+            $travelAuthorisation = TravelAuthorisation::create([
                 'applicant_id' => auth()->id(),
                 'status' => ApprovalStatusEnum::SUPERVISOR_PENDING,
                 'supervisor_id' => auth()->user()->supervisor_id,
                 'supervisor_reject_reasons' => null,
                 'manager_id' => auth()->user()->manager_id,
                 'manager_reject_reasons' => null,
+                'finance_id' => null,
+                'finance_reject_reasons' => null,
+                'unit_id' => 1,
+                'transport_type' => $request->transport_type,
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date,
                 'accumulation' => Util::getDateTimeDifference($request->start_date, $request->end_date),
-                'leave_type' => $request->leave_type,
+                'accomodation_detail' => $request->accomodation_detail,
+                'travel_reasons' => $request->travel_reasons,
             ]);
 
-            if (!$leaveApplication) {
+            if (!$travelAuthorisation) {
                 Throw new Exception("An error occurred while storing the leave application.");
             }
         } catch (Exception $e) {

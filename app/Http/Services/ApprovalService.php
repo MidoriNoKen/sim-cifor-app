@@ -2,115 +2,85 @@
 
 namespace App\Http\Services;
 
-use App\Enums\ApprovalStatusEnum;
 use App\Enums\PositionEnum;
-use App\Enums\RoleEnum;
 use App\Utils\Util;
 use Exception;
 
-class dataService
+class ApprovalService
 {
-    public function formattedData($data, $loggedId)
+    private $loggedUser, $loggedId, $loggedRole, $loggedPosition;
+
+    public function __construct(UserService $userService)
     {
-        $this->getAccessData($data, $loggedId);
+        $this->loggedUser = $userService->getLoggedUser();
+        $this->loggedId = $this->loggedUser->id;
+        $this->loggedRole = $this->loggedUser->role->name;
+        $this->loggedPosition = $this->loggedUser->position;
+    }
+
+    public function formattedData($data)
+    {
+        $this->getAccessData($data);
         $data->start_date = Util::formatDate($data->start_date);
         $data->end_date = Util::formatDate($data->end_date);
     }
 
-    public function getAccessData($data, $loggedId)
+    public function getAccessData($data)
     {
-        $data->isSupervisor = false;
-        $data->isManager = false;
-
-        $supervisorId = $data->supervisor_id;
-        $managerId = $data->manager_id;
-
-        if ($loggedId == $supervisorId) {
-            $data->isSupervisor = true;
-        } else if ($loggedId == $managerId) {
-            $data->isManager = true;
-        }
+        $loggedId = $this->loggedId;
+        $data->isSupervisor = $loggedId == $data->supervisor_id ? true : false;
+        $data->isManager = $loggedId == $data->manager_id ? true : false;
+        if ($this->loggedPosition == PositionEnum::FINANCE)
+            $data->isFinance = $loggedId == $data->finance_id ? true : false;
     }
 
-    public function approval($data, $loggedUser, $role, $position, $status, $updatedStatus)
+    public function checkAccess($userId, $role, $position)
     {
         try {
-            if ($loggedUser->role->name = $role && $loggedUser->position == $position && $loggedUser->id = $data->supervisor_id) {
-                if ($data->status != $status) {
-                    throw new Exception("This leave application has been approved or rejected.");
-                }
-                $data->status = $updatedStatus;
-                $data->save();
-                return true;
-            } else {
-                throw new Exception('error', 'You are not allowed to approve this leave application.');
-            }
+            return ($this->loggedId == $userId && $this->loggedRole == $role && $this->loggedPosition == $position)
+                    ? true
+                    : throw new Exception("You don't have access to this data.");
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
         }
     }
 
-    public function reject($loggedRole, $loggedPosition, $data, $request)
+    public function checkStatus($status, $statusToCheck)
     {
         try {
-            if ($loggedRole == RoleEnum::MANAGER && $loggedPosition == PositionEnum::MANAGER) {
-                $status = ApprovalStatusEnum::MANAGER_PENDING;
-                $newStatus = ApprovalStatusEnum::MANAGER_REJECTED;
-                $data->manager_reject_reasons = $request->manager_reject_reasons;
-            } else if ($loggedRole == RoleEnum::STAFF && $loggedPosition == PositionEnum::SENIOR) {
-                $status = ApprovalStatusEnum::SUPERVISOR_PENDING;
-                $newStatus = ApprovalStatusEnum::SUPERVISOR_REJECTED;
-                $data->supervisor_reject_reasons = $request->supervisor_reject_reasons;
-            } else {
-                throw new Exception("You are not allowed to reject this leave application.");
-            }
-
-            if ($data->status != $status) {
-                throw new Exception("This leave application has been approved or rejected.");
-            }
-            $data->status = $newStatus;
-            $data->save();
+            return $status == $statusToCheck ? true
+            : throw new Exception("This data has been approved or rejected.");
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
         }
     }
 
-    public function unreject($loggedRole, $loggedPosition, $data)
+    public function approval($data, $userId, $role, $position, $status, $updatedStatus)
     {
-        try {
-            if ($loggedRole == RoleEnum::MANAGER && $loggedPosition == PositionEnum::MANAGER) {
-                $status = ApprovalStatusEnum::MANAGER_REJECTED;
-                $newStatus = ApprovalStatusEnum::MANAGER_PENDING;
-                $data->manager_reject_reasons = null;
-            } else if ($loggedRole == RoleEnum::STAFF && $loggedPosition == PositionEnum::SENIOR) {
-                $status = ApprovalStatusEnum::SUPERVISOR_REJECTED;
-                $newStatus = ApprovalStatusEnum::SUPERVISOR_PENDING;
-                $data->supervisor_reject_reasons = null;
-            } else {
-                throw new Exception("You are not allowed to reject this leave application.");
-            }
+        $this->checkAccess($userId, $role, $position);
+        $this->checkStatus($data->status, $status);
 
-            if ($data->status != $status) {
-                throw new Exception("This leave application has been approved or rejected.");
-            }
-            $data->status = $newStatus;
-            $data->save();
-        } catch (Exception $e) {
-            throw new Exception($e->getMessage());
-        }
+        $data->status = $updatedStatus;
+        $data->save();
+
+        return true;
     }
 
-    public function checkAccess($data, $loggedId)
+    public function rejection($data, $userId, $role, $position, $status, $updatedStatus, $reasons)
     {
-        try {
-            if ($loggedId == $data->manager_id) {
-                return true;
-            } else if($loggedId == $data->supervisor_id) {
-                return true;
-            }
-            throw new Exception("You don't have access to this leave application.");
-        } catch (Exception $e) {
-            throw new Exception($e->getMessage());
-        }
+        $this->checkAccess($userId, $role, $position);
+        $this->checkStatus($data->status, $status);
+
+        if ($this->loggedRole == PositionEnum::MANAGER)
+            $data->manager_reject_reasons = $reasons;
+
+        else if ($this->loggedRole == PositionEnum::SENIOR)
+            $data->supervisor_reject_reasons = $reasons;
+
+        else if ($this->loggedRole == PositionEnum::FINANCE)
+            $data->finance_reject_reasons = $reasons;
+
+        $data->status = $updatedStatus;
+        $data->save();
     }
 }

@@ -3,8 +3,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, router, usePage } from "@inertiajs/vue3";
 import IndexButton from "./Partials/IndexButton.vue";
 
-const leaveApplications = usePage().props.leaveApplications;
-const loggedRole = usePage().props.loggedRole;
+const { leaveApplications, loggedRole } = usePage().props;
 const user = usePage().props.auth.user;
 
 const createLeaveApplication = () => {
@@ -39,7 +38,7 @@ const createLeaveApplication = () => {
                                     <th>Status</th>
                                     <th>Start Date</th>
                                     <th>End Date</th>
-                                    <th>Day Accumulation</th>
+                                    <th>Accumulation</th>
                                     <th>Supervisor</th>
                                     <th>Manager</th>
                                     <th>Action</th>
@@ -56,19 +55,30 @@ const createLeaveApplication = () => {
                                             loggedRole !== 'Staff'
                                         "
                                     >
-                                        {{ leaveApplication.applicant }}
+                                        {{ leaveApplication.applicant.name }}
                                     </td>
                                     <td>{{ leaveApplication.leave_type }}</td>
                                     <td>{{ leaveApplication.status }}</td>
                                     <td>{{ leaveApplication.start_date }}</td>
                                     <td>{{ leaveApplication.end_date }}</td>
                                     <td>
-                                        {{ leaveApplication.day_accumulation }}
+                                        {{ leaveApplication.accumulation }}
                                     </td>
                                     <td>
-                                        {{ leaveApplication.supervisor.name }}
+                                        {{
+                                            leaveApplication.supervisor
+                                                ? leaveApplication.supervisor
+                                                      .name
+                                                : ""
+                                        }}
                                     </td>
-                                    <td>{{ leaveApplication.manager.name }}</td>
+                                    <td>
+                                        {{
+                                            leaveApplication.manager
+                                                ? leaveApplication.manager.name
+                                                : ""
+                                        }}
+                                    </td>
                                     <td>
                                         <IndexButton
                                             :leaveApplication="leaveApplication"

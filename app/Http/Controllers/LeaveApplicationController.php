@@ -6,53 +6,43 @@ use App\Enums\ApprovalStatusEnum;
 use App\Enums\PositionEnum;
 use App\Enums\RoleEnum;
 use App\Http\Controllers\Controller;
+use App\Http\Services\ApprovalService;
 use App\Http\Services\LeaveApplicationService;
 use App\Http\Services\UserService;
-use App\Models\LeaveApplication;
-use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class LeaveApplicationController extends Controller
 {
-    private $leaveApplicationService;
-    private $userService;
+    private $leaveApplicationService, $approvalService, $userService, $loggedRole, $loggedPosition;
 
-    public function __construct(LeaveApplicationService $leaveApplicationService, UserService $userService)
+    public function __construct(LeaveApplicationService $leaveApplicationService, ApprovalService $approvalService, UserService $userService)
     {
         $this->leaveApplicationService = $leaveApplicationService;
+        $this->approvalService = $approvalService;
         $this->userService = $userService;
+        $this->loggedRole = $userService->getLoggedRole();
+        $this->loggedPosition = $userService->getLoggedPosition();
     }
 
     public function index()
     {
-        $loggedId = $this->userService->getLoggedId();
-        $loggedRole = $this->userService->getLoggedRole();
         $leaveApplications = $this->leaveApplicationService->getAllByLoggedPosition();
 
-        $leaveApplications->each(function ($leaveApplication) use ($loggedId) {
-            $this->leaveApplicationService->formattedData($leaveApplication, $loggedId);
+        $leaveApplications->each(function ($leaveApplication) {
+            $this->approvalService->formattedData($leaveApplication);
         });
 
-        return Inertia::render('LeaveApplication/Index')->with(['leaveApplications' => $leaveApplications, 'loggedRole' => $loggedRole]);
+        return Inertia::render('LeaveApplication/Index')->with(['leaveApplications' => $leaveApplications, 'loggedRole' => $this->loggedRole]);
     }
 
     public function show($id)
     {
-        $loggedId = $this->userService->getLoggedId();
-        $loggedRole = $this->userService->getLoggedRole();
         $leaveApplication = $this->leaveApplicationService->getById($id);
         $user = $this->userService->getUserById($leaveApplication->applicant_id);
-        $checkAccess = $this->leaveApplicationService->checkAccess($leaveApplication, $loggedId);
+        $this->approvalService->formattedData($leaveApplication);
 
-        if (!$checkAccess) {
-            return redirect()->back()->withErrors(['error', $checkAccess]);
-        }
-
-        $this->leaveApplicationService->formattedData($leaveApplication, $loggedId);
-
-        return Inertia::render('LeaveApplication/Show')->with(['user' => $user, 'leaveApplication' => $leaveApplication, 'loggedRole' => $loggedRole]);
+        return Inertia::render('LeaveApplication/Show')->with(['user' => $user, 'leaveApplication' => $leaveApplication, 'loggedRole' => $this->loggedRole]);
     }
 
     public function create()
@@ -66,115 +56,59 @@ class LeaveApplicationController extends Controller
         return redirect()->route('leaveApplications.index');
     }
 
-    public function approveBySupervisor($id)
+    public function approve($id)
     {
-        $loggedId = $this->userService->getLoggedId();
-        $loggedUser = $this->userService->getLoggedUser();
         $leaveApplication = $this->leaveApplicationService->getById($id);
+        if ($this->loggedPosition === PositionEnum::SENIOR)
+        $this->approvalService->approval($leaveApplication, $leaveApplication->supervisor_id, RoleEnum::STAFF, PositionEnum::SENIOR, ApprovalStatusEnum::SUPERVISOR_PENDING, ApprovalStatusEnum::MANAGER_PENDING);
 
-        $checkAccess = $this->leaveApplicationService->checkAccess($leaveApplication, $loggedId);
+        else if ($this->loggedPosition === PositionEnum::MANAGER)
+        $this->approvalService->approval($leaveApplication, $leaveApplication->supervisor_id, RoleEnum::MANAGER, PositionEnum::MANAGER, ApprovalStatusEnum::MANAGER_PENDING, ApprovalStatusEnum::APPROVED);
 
-        if (!$checkAccess) {
-            return redirect()->back()->withErrors(['error', $checkAccess]);
-        }
-
-        $result = $this->leaveApplicationService->approval($leaveApplication, $loggedUser, RoleEnum::STAFF, PositionEnum::SENIOR, ApprovalStatusEnum::SUPERVISOR_PENDING, ApprovalStatusEnum::MANAGER_PENDING);
-
-        if ($result) {
-            return Inertia::location(route('leaveApplications.index'));
-        }
+        return Inertia::location(route('leaveApplications.index'));
     }
 
-    public function disapproveBySupervisor($id)
+    public function disapprove($id)
     {
-        $loggedId = $this->userService->getLoggedId();
-        $loggedUser = $this->userService->getLoggedUser();
         $leaveApplication = $this->leaveApplicationService->getById($id);
+        if ($this->loggedPosition === PositionEnum::SENIOR)
+        $this->approvalService->approval($leaveApplication, $leaveApplication->supervisor_id, RoleEnum::STAFF, PositionEnum::SENIOR, ApprovalStatusEnum::MANAGER_PENDING, ApprovalStatusEnum::SUPERVISOR_PENDING);
 
-        $checkAccess = $this->leaveApplicationService->checkAccess($leaveApplication, $loggedId);
+        else if ($this->loggedPosition === PositionEnum::MANAGER)
+        $this->approvalService->approval($leaveApplication, $leaveApplication->supervisor_id, RoleEnum::MANAGER, PositionEnum::MANAGER, ApprovalStatusEnum::APPROVED, ApprovalStatusEnum::MANAGER_PENDING);
 
-        if (!$checkAccess) {
-            return redirect()->back()->withErrors(['error', $checkAccess]);
-        }
-
-        $result = $this->leaveApplicationService->approval($leaveApplication, $loggedUser, RoleEnum::STAFF, PositionEnum::SENIOR, ApprovalStatusEnum::MANAGER_PENDING, ApprovalStatusEnum::SUPERVISOR_PENDING);
-
-        if ($result) {
-            return Inertia::location(route('leaveApplications.index'));
-        }
-    }
-
-
-    public function approveByManager($id)
-    {
-        $loggedId = $this->userService->getLoggedId();
-        $loggedUser = $this->userService->getLoggedUser();
-        $leaveApplication = $this->leaveApplicationService->getById($id);
-
-        $checkAccess = $this->leaveApplicationService->checkAccess($leaveApplication, $loggedId);
-
-        if (!$checkAccess) {
-            return redirect()->back()->withErrors(['error', $checkAccess]);
-        }
-
-        $result = $this->leaveApplicationService->approval($leaveApplication, $loggedUser, RoleEnum::MANAGER, PositionEnum::MANAGER, ApprovalStatusEnum::MANAGER_PENDING, ApprovalStatusEnum::APPROVED);
-
-        if ($result) {
-            return Inertia::location(route('leaveApplications.index'));
-        }
-    }
-
-    public function disapproveByManager($id)
-    {
-        $loggedId = $this->userService->getLoggedId();
-        $loggedUser = $this->userService->getLoggedUser();
-        $leaveApplication = $this->leaveApplicationService->getById($id);
-
-        $checkAccess = $this->leaveApplicationService->checkAccess($leaveApplication, $loggedId);
-
-        if (!$checkAccess) {
-            return redirect()->back()->withErrors(['error', $checkAccess]);
-        }
-
-        $result = $this->leaveApplicationService->approval($leaveApplication, $loggedUser, RoleEnum::MANAGER, PositionEnum::MANAGER, ApprovalStatusEnum::APPROVED, ApprovalStatusEnum::MANAGER_PENDING);
-
-        if ($result) {
-            return Inertia::location(route('leaveApplications.index'));
-        }
+        return Inertia::location(route('leaveApplications.index'));
     }
 
     public function rejectPage($id)
     {
-        $loggedId = $this->userService->getLoggedId();
         $leaveApplication = $this->leaveApplicationService->getById($id);
 
-        $checkAccess = $this->leaveApplicationService->checkAccess($leaveApplication, $loggedId);
-
-        if (!$checkAccess) {
-            return redirect()->back()->withErrors(['error', $checkAccess]);
-        }
-
-        $this->leaveApplicationService->formattedData($leaveApplication, $loggedId);
+        $this->approvalService->formattedData($leaveApplication);
         return Inertia::render('LeaveApplication/Reject')->with(['leaveApplication' => $leaveApplication]);
     }
 
     public function reject(Request $request, $id)
     {
-        $loggedRole = $this->userService->getLoggedRole();
-        $loggedPosition = $this->userService->getLoggedPosition();
         $leaveApplication = $this->leaveApplicationService->getById($id);
+        if ($this->loggedPosition === PositionEnum::SENIOR)
+        $this->approvalService->rejection($leaveApplication, $leaveApplication->supervisor_id, RoleEnum::STAFF, PositionEnum::SENIOR, ApprovalStatusEnum::SUPERVISOR_PENDING, ApprovalStatusEnum::MANAGER_REJECTED, $request->reasons);
 
-        $this->leaveApplicationService->reject($loggedRole, $loggedPosition, $leaveApplication, $request);
+        else if ($this->loggedPosition === PositionEnum::MANAGER)
+        $this->approvalService->rejection($leaveApplication, $leaveApplication->manager_id, RoleEnum::MANAGER, PositionEnum::MANAGER, ApprovalStatusEnum::MANAGER_PENDING, ApprovalStatusEnum::MANAGER_REJECTED, $request->reasons);
+
         return Inertia::location(route('leaveApplications.index'));
     }
 
     public function unreject($id)
     {
-        $loggedRole = $this->userService->getLoggedRole();
-        $loggedPosition = $this->userService->getLoggedPosition();
         $leaveApplication = $this->leaveApplicationService->getById($id);
+        if ($this->loggedPosition === PositionEnum::SENIOR)
+        $this->approvalService->rejection($leaveApplication, $leaveApplication->supervisor_id, RoleEnum::STAFF, PositionEnum::SENIOR, ApprovalStatusEnum::SUPERVISOR_REJECTED, ApprovalStatusEnum::SUPERVISOR_PENDING, null);
 
-        $this->leaveApplicationService->unreject($loggedRole, $loggedPosition, $leaveApplication);
+        else if ($this->loggedPosition === PositionEnum::MANAGER)
+        $this->approvalService->rejection($leaveApplication, $leaveApplication->manager_id, RoleEnum::MANAGER, PositionEnum::MANAGER, ApprovalStatusEnum::MANAGER_REJECTED, ApprovalStatusEnum::MANAGER_PENDING, null);
+
         return Inertia::location(route('leaveApplications.index'));
     }
 }

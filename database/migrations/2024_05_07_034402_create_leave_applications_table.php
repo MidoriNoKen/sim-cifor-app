@@ -20,18 +20,16 @@ class CreateLeaveApplicationsTable extends Migration
 
             // Supervisor Status and Notes
             $table->string('supervisor_id')->nullable();
-            $table->string('supervisor_approval')->nullable();
             $table->text('supervisor_reject_reasons')->nullable();
 
             // Manager Status and Notes
             $table->string('manager_id')->nullable();
-            $table->string('manager_approval')->nullable();
             $table->text('manager_reject_reasons')->nullable();
 
             // Leave Information
             $table->datetime('start_date');
             $table->datetime('end_date');
-            $table->unsignedInteger('day_accumulation');
+            $table->unsignedInteger('accumulation');
             $table->string('leave_type');
             $table->timestamps();
         });
