@@ -44,6 +44,22 @@ const showingNavigationDropdown = ref(false);
                                     Users
                                 </NavLink>
                                 <NavLink
+                                    :href="route('projects.index')"
+                                    :active="route().current('projects.index')"
+                                >
+                                    Projects
+                                </NavLink>
+                                <NavLink
+                                    :href="route('travelAuthorisations.index')"
+                                    :active="
+                                        route().current(
+                                            'travelAuthorisations.index'
+                                        )
+                                    "
+                                >
+                                    Tasks
+                                </NavLink>
+                                <NavLink
                                     :href="route('leaveApplications.index')"
                                     :active="
                                         route().current(

@@ -2,22 +2,21 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Project extends Model
 {
-    use HasFactory;
-
-    protected $fillable = ['name', 'manager_id', 'description'];
-
-    public function manager()
-    {
-        return $this->belongsTo(User::class, 'manager_id');
-    }
+    protected $fillable = [
+        'name', 'pm_id', 'start_date', 'end_date', 'description', 'status'
+    ];
 
     public function tasks()
     {
-        return $this->hasMany(Task::class);
+        return $this->belongsToMany(Task::class, 'project_tasks', 'project_id', 'task_id');
+    }
+
+    public function projectManager()
+    {
+        return $this->belongsTo(User::class, 'pm_id', 'id');
     }
 }
