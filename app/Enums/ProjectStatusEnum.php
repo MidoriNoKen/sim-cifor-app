@@ -10,4 +10,13 @@ class ProjectStatusEnum
     public const REVIEW = 'On Review';
     public const DONE = 'Done';
     public const CANCELLED = 'Cancelled';
+
+    public const STATUSES = [
+        self::BACKLOG,
+        self::PLANNING,
+        self::PROGRESS,
+        self::REVIEW,
+        self::DONE,
+        self::CANCELLED
+    ];
 }

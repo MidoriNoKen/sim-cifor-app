@@ -37,7 +37,7 @@ class ProjectService
         try {
             $request->validate([
                 'name' => 'required',
-                'pm' => 'required',
+                'pm_id' => 'required',
                 'start_date' => 'required',
                 'end_date' => 'required',
                 'description' => 'required',
@@ -45,7 +45,7 @@ class ProjectService
 
             $project = Project::create([
                 'name' => $request->name,
-                'pm_id' => $request->pm['id'],
+                'pm_id' => $request->pm_id,
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date,
                 'description' => $request->description,

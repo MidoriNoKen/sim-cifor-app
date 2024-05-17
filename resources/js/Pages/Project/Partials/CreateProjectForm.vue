@@ -11,7 +11,7 @@ const pms = usePage().props.pms;
 
 const form = useForm({
     name: "",
-    pm: null,
+    pm_id: null,
     start_date: null,
     end_date: null,
     description: "",
@@ -45,7 +45,7 @@ const form = useForm({
             <InputError class="mt-2" :message="form.errors.name" />
         </div>
 
-        <OptionPMList :form="form" v-model="form.pm" :pms="pms" />
+        <OptionPMList :form="form" v-model="form._id" :pms="pms" />
 
         <div class="mt-4">
             <InputLabel for="start_date" value="Start Date" />

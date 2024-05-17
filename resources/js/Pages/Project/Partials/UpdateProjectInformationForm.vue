@@ -2,6 +2,7 @@
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import OptionPMList from "@/Components/Options/OptionPMList.vue";
+import OptionStatusesList from "@/Components/Options/OptionStatusesList.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { useForm, usePage } from "@inertiajs/vue3";
@@ -9,29 +10,32 @@ import { useForm, usePage } from "@inertiajs/vue3";
 const loggedRole = usePage().props.loggedRole;
 const project = usePage().props.project;
 const pms = usePage().props.pms;
+const statuses = usePage().props.statuses;
 
 const form = useForm({
     name: project.name,
-    pm: project.pm,
+    pm_id: project.pm_id,
     start_date: project.start_date,
     end_date: project.end_date,
     description: project.description,
+    status: project.status,
 });
+
+function updateProject() {
+    if (confirm("Are you sure you want to update this project?")) {
+        form.patch(`/projects/${project.id}`);
+    }
+}
 </script>
 
 <template>
     <header>
         <h2 class="text-lg font-medium text-gray-900">Project Information</h2>
 
-        <p class="mt-1 text-sm text-gray-600">
-            Create new project's information.
-        </p>
+        <p class="mt-1 text-sm text-gray-600">Update project's information.</p>
     </header>
 
-    <form
-        @submit.prevent="form.patch(route('projects.update', project))"
-        class="mt-6 space-y-6"
-    >
+    <form @submit.prevent="updateProject" class="mt-6 space-y-6">
         <div>
             <InputLabel for="name" value="Project Name" />
 
@@ -46,7 +50,7 @@ const form = useForm({
             <InputError class="mt-2" :message="form.errors.name" />
         </div>
 
-        <OptionPMList :form="form" v-model="form.pm" :pms="pms" />
+        <OptionPMList :form="form" v-model="form.pm_id" :pms="pms" />
 
         <div class="mt-4">
             <InputLabel for="start_date" value="Start Date" />
@@ -84,6 +88,12 @@ const form = useForm({
             ></textarea>
             <InputError class="mt-2" :message="form.errors.description" />
         </div>
+
+        <OptionStatusesList
+            :form="form"
+            v-model="form.status"
+            :statuses="statuses"
+        />
 
         <div class="flex items-center gap-4">
             <PrimaryButton :disabled="form.processing">Save</PrimaryButton>

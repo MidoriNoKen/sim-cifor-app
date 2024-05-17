@@ -38,7 +38,7 @@ function updateTask() {
     <header>
         <h2 class="text-lg font-medium text-gray-900">Task Information</h2>
 
-        <p class="mt-1 text-sm text-gray-600">Create new task's information.</p>
+        <p class="mt-1 text-sm text-gray-600">Update task's information.</p>
     </header>
 
     <form @submit.prevent="updateTask" class="mt-6 space-y-6">

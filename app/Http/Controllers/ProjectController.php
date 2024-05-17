@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ProjectStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Services\ProjectService;
 use App\Http\Services\UserService;
@@ -48,7 +49,8 @@ class ProjectController extends Controller
     {
         $project = $this->projectService->getByIdWithPM($id);
         $pms = $this->projectService->getProjectManager();
-        return Inertia::render('Project/Edit', ['project' => $project, 'pms' => $pms]);
+        $statuses = ProjectStatusEnum::STATUSES;
+        return Inertia::render('Project/Edit', ['project' => $project, 'pms' => $pms, 'statuses' => $statuses]);
     }
 
     public function update(Request $request, $id)
