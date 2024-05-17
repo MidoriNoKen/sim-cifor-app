@@ -1,9 +1,9 @@
 <script setup>
 import { Head } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import DeleteProjectForm from "@/Pages/Project/Partials/DeleteProjectForm.vue";
+import DeleteTaskForm from "@/Pages/Task/Partials/DeleteTaskForm.vue";
 import UpdatePasswordForm from "@/Components/Forms/UpdatePasswordForm.vue";
-import UpdateProjectInformationForm from "./Partials/UpdateProjectInformationForm.vue";
+import UpdateTaskInformationForm from "./Partials/UpdateTaskInformationForm.vue";
 
 const clearAlerts = () => {
     $page.props.success = "";
@@ -12,12 +12,12 @@ const clearAlerts = () => {
 </script>
 
 <template>
-    <Head title="Edit Project" />
+    <Head title="Edit Task" />
 
     <AuthenticatedLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Edit Project
+                Edit Task
             </h2>
         </template>
 
@@ -29,7 +29,7 @@ const clearAlerts = () => {
             />
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
                 <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                    <UpdateProjectInformationForm />
+                    <UpdateTaskInformationForm />
                 </div>
 
                 <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
@@ -37,7 +37,7 @@ const clearAlerts = () => {
                 </div>
 
                 <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                    <DeleteProjectForm />
+                    <DeleteTaskForm />
                 </div>
             </div>
         </div>

@@ -1,39 +1,46 @@
 <script setup>
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
-import OptionPMList from "@/Components/Options/OptionPMList.vue";
+import OptionUsersList from "@/Components/Options/OptionUsersList.vue";
+import OptionProjectsList from "@/Components/Options/OptionProjectsList.vue";
+import OptionPrioritiesList from "@/Components/Options/OptionPrioritiesList.vue";
+import OptionStatusesList from "@/Components/Options/OptionStatusesList.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { useForm, usePage } from "@inertiajs/vue3";
 
 const loggedRole = usePage().props.loggedRole;
-const project = usePage().props.project;
-const pms = usePage().props.pms;
+const task = usePage().props.task;
+const users = usePage().props.users;
+const projects = usePage().props.projects;
+const priorities = usePage().props.priorities;
+const statuses = usePage().props.statuses;
 
 const form = useForm({
-    name: project.name,
-    pm: project.pm,
-    start_date: project.start_date,
-    end_date: project.end_date,
-    description: project.description,
+    name: task.name,
+    project_id: task.project_id,
+    assigned_user: task.assigned_user,
+    start_date: task.start_date,
+    end_date: task.end_date,
+    priority: task.priority,
+    description: task.description,
+    status: task.status,
 });
 </script>
 
 <template>
     <header>
-        <h2 class="text-lg font-medium text-gray-900">Project Information</h2>
+        <h2 class="text-lg font-medium text-gray-900">Task Information</h2>
 
-        <p class="mt-1 text-sm text-gray-600">
-            Create new project's information.
-        </p>
+        <p class="mt-1 text-sm text-gray-600">Create new task's information.</p>
     </header>
 
     <form
-        @submit.prevent="form.post(route('projects.store'))"
+        @submit.prevent="form.post(route('tasks.store'))"
         class="mt-6 space-y-6"
     >
         <div>
-            <InputLabel for="name" value="Project Name" />
+            <InputLabel for="name" value="Task Name" />
 
             <TextInput
                 id="name"
@@ -46,7 +53,17 @@ const form = useForm({
             <InputError class="mt-2" :message="form.errors.name" />
         </div>
 
-        <OptionPMList :form="form" v-model="form.pm" :pms="pms" />
+        <OptionProjectsList
+            :form="form"
+            v-model="form.project_id"
+            :projects="projects"
+        />
+
+        <OptionUsersList
+            :form="form"
+            v-model="form.assigned_user"
+            :users="users"
+        />
 
         <div class="mt-4">
             <InputLabel for="start_date" value="Start Date" />
@@ -74,6 +91,12 @@ const form = useForm({
             <InputError class="mt-2" :message="form.errors.start_date" />
         </div>
 
+        <OptionPrioritiesList
+            :form="form"
+            v-model="form.priority"
+            :priorities="priorities"
+        />
+
         <div class="mt-4">
             <InputLabel for="description" value="Description" />
 
@@ -84,6 +107,12 @@ const form = useForm({
             ></textarea>
             <InputError class="mt-2" :message="form.errors.description" />
         </div>
+
+        <OptionStatusesList
+            :form="form"
+            v-model="form.status"
+            :statuses="statuses"
+        />
 
         <div class="flex items-center gap-4">
             <PrimaryButton :disabled="form.processing">Save</PrimaryButton>

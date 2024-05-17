@@ -100,7 +100,15 @@ class TaskService
             $task->status = $request->status;
             $task->save();
 
-            if (!$task) {
+            $projectTask = ProjectTask::where('task_id', $id)->first();
+            $projectTask->project_id = $request->project_id;
+            $projectTask->save();
+
+            $userTask = UserTask::where('task_id', $id)->first();
+            $userTask->user_id = $request->assigned_user;
+            $userTask->save();
+
+            if (!$task || !$projectTask || !$userTask) {
                 Throw new Exception("An error occurred while updating the task.");
             }
         } catch (Exception $e) {

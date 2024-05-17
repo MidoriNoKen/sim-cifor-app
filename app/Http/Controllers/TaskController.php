@@ -54,9 +54,12 @@ class TaskController extends Controller
 
     public function edit($id)
     {
-        $task = $this->taskService->getByIdWithPM($id);
-        $pms = $this->taskService->getTaskManager();
-        return Inertia::render('Task/Edit', ['task' => $task, 'pms' => $pms]);
+        $task = $this->taskService->show($id);
+        $users = $this->userService->getAll();
+        $projects = $this->projectService->getAll();
+        $priorities = PriorityEnum::PRIORITY;
+        $statuses = TaskStatusEnum::STATUSES;
+        return Inertia::render('Task/Edit', ['task' => $task, 'users' => $users, 'priorities' => $priorities, 'projects' => $projects, 'statuses' => $statuses]);
     }
 
     public function update(Request $request, $id)
