@@ -53,7 +53,7 @@ class ProjectService
             ]);
 
             if (!$project) {
-                Throw new Exception("An error occurred while storing the leave application.");
+                Throw new Exception("An error occurred while storing the project.");
             }
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
@@ -81,7 +81,7 @@ class ProjectService
             $project->save();
 
             if (!$project) {
-                Throw new Exception("An error occurred while updating the leave application.");
+                Throw new Exception("An error occurred while updating the project.");
             }
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
@@ -94,7 +94,7 @@ class ProjectService
             $project->delete();
 
             if (!$project) {
-                Throw new Exception("An error occurred while deleting the leave application.");
+                Throw new Exception("An error occurred while deleting the project.");
             }
         } catch (Exception $e) {
             throw new Exception($e->getMessage());

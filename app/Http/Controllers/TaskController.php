@@ -2,65 +2,72 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\PriorityEnum;
+use App\Enums\TaskStatusEnum;
 use App\Http\Controllers\Controller;
-use App\Models\Task;
+use App\Http\Services\ProjectService;
+use App\Http\Services\TaskService;
+use App\Http\Services\UserService;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class TaskController extends Controller
 {
+    private $taskService, $userService, $projectService, $loggedRole;
+
+    public function __construct(TaskService $taskService, UserService $userService, ProjectService $projectService)
+    {
+        $this->taskService = $taskService;
+        $this->userService = $userService;
+        $this->projectService = $projectService;
+        $this->loggedRole = $userService->getLoggedRole();
+    }
+
     public function index()
     {
-        return view('tasks.index');
+        $loggedRole = $this->loggedRole;
+        $tasks = $this->taskService->getAll();
+        return Inertia::render('Task/Index')->with(['loggedRole' => $loggedRole, 'tasks' => $tasks]);
     }
 
     public function create()
     {
-        return view('tasks.create');
+        $users = $this->userService->getAll();
+        $projects = $this->projectService->getAll();
+        $priorities = PriorityEnum::PRIORITY;
+        return Inertia::render('Task/Create')->with(['users' => $users, 'priorities' => $priorities, 'projects' => $projects]);
     }
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required',
-            'description' => 'required',
-            'status' => 'required',
-        ]);
-
-        Task::create($request->all());
-
-        return redirect()->route('tasks.index')
-            ->with('success', 'Task created successfully.');
+        $this->taskService->store($request);
+        return Inertia::location(route('tasks.index'));
     }
 
-    public function show(Task $task)
+    public function show($id)
     {
-        return view('tasks.show', compact('task'));
+        $task = $this->taskService->show($id);
+        $project = $this->projectService->show($task->project_id);
+        $user = $this->userService->getUserByIdWithRole($task->assigned_user);
+        return Inertia::render('Task/Show', ['task' => $task, 'project' => $project, 'user' => $user]);
     }
 
-    public function edit(Task $task)
+    public function edit($id)
     {
-        return view('tasks.edit', compact('task'));
+        $task = $this->taskService->getByIdWithPM($id);
+        $pms = $this->taskService->getTaskManager();
+        return Inertia::render('Task/Edit', ['task' => $task, 'pms' => $pms]);
     }
 
-    public function update(Request $request, Task $task)
+    public function update(Request $request, $id)
     {
-        $request->validate([
-            'name' => 'required',
-            'description' => 'required',
-            'status' => 'required',
-        ]);
-
-        $task->update($request->all());
-
-        return redirect()->route('tasks.index')
-            ->with('success', 'Task updated successfully.');
+        $this->taskService->update($request, $id);
+        return Inertia::location(route('tasks.index'));
     }
 
-    public function destroy(Task $task)
+    public function destroy($id)
     {
-        $task->delete();
-
-        return redirect()->route('tasks.index')
-            ->with('success', 'Task deleted successfully.');
+        $this->taskService->delete($id);
+        return Inertia::location(route('tasks.index'));
     }
 }
