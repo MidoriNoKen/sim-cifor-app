@@ -26,6 +26,12 @@ const form = useForm({
     description: task.description,
     status: task.status,
 });
+
+function updateTask() {
+    if (confirm("Are you sure you want to update this task?")) {
+        form.patch(`/tasks/${task.id}`);
+    }
+}
 </script>
 
 <template>
@@ -35,10 +41,7 @@ const form = useForm({
         <p class="mt-1 text-sm text-gray-600">Create new task's information.</p>
     </header>
 
-    <form
-        @submit.prevent="form.post(route('tasks.store'))"
-        class="mt-6 space-y-6"
-    >
+    <form @submit.prevent="updateTask" class="mt-6 space-y-6">
         <div>
             <InputLabel for="name" value="Task Name" />
 

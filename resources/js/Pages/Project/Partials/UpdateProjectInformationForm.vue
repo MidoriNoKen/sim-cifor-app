@@ -29,7 +29,7 @@ const form = useForm({
     </header>
 
     <form
-        @submit.prevent="form.post(route('projects.store'))"
+        @submit.prevent="form.patch(route('projects.update', project))"
         class="mt-6 space-y-6"
     >
         <div>

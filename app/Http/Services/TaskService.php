@@ -119,9 +119,14 @@ class TaskService
     public function delete($id) {
         try {
             $task = Task::find($id);
+            $projectTask = ProjectTask::where('task_id', $id)->first();
+            $userTask = UserTask::where('task_id', $id)->first();
+
+            $userTask->delete();
+            $projectTask->delete();
             $task->delete();
 
-            if (!$task) {
+            if (!$task || !$projectTask || !$userTask) {
                 Throw new Exception("An error occurred while deleting the task.");
             }
         } catch (Exception $e) {
