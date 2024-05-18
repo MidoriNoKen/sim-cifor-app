@@ -1,10 +1,9 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { Head, router, usePage } from "@inertiajs/vue3";
+import { Head, usePage } from "@inertiajs/vue3";
 
-const travelAuthorisation = usePage().props.travelAuthorisation;
-const user = usePage().props.user;
-const loggedRole = usePage().props.loggedRole;
+const { travelAuthorisation, user } = usePage().props;
+const loggedRole = usePage().props.auth.role;
 </script>
 
 <template>

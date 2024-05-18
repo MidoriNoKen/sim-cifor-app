@@ -58,18 +58,6 @@ const unreject = (leaveApplication) => {
             >
                 Disapprove
             </button>
-            <button
-                class="btn btn-sm m-1"
-                style="
-                    background-color: gray;
-                    color: white;
-                    opacity: 0.5;
-                    cursor: not-allowed;
-                "
-                disabled
-            >
-                Reject
-            </button>
         </span>
         <span v-else-if="leaveApplication.status === 'Approved'">
             <button
@@ -84,6 +72,8 @@ const unreject = (leaveApplication) => {
             >
                 Approved
             </button>
+        </span>
+        <span v-else-if="leaveApplication.status === 'Rejected by Manager'">
             <button
                 class="btn btn-sm m-1"
                 style="
@@ -94,33 +84,10 @@ const unreject = (leaveApplication) => {
                 "
                 disabled
             >
-                Reject
-            </button>
-        </span>
-        <span v-else-if="leaveApplication.status === 'Rejected by Manager'">
-            <button
-                class="btn btn-danger hover-background btn-sm m-1"
-                style="color: white"
-                disabled
-            >
-                Manager Rejected
-            </button>
-            <button
-                class="btn btn-danger hover-background btn-sm m-1"
-                style="color: white"
-                disabled
-            >
-                Manager Rejected
+                Rejected by Manager
             </button>
         </span>
         <span v-else-if="leaveApplication.status === 'Rejected by Supervisor'">
-            <button
-                class="btn btn-danger hover-background btn-sm m-1"
-                style="color: white"
-                disabled
-            >
-                Rejected
-            </button>
             <button
                 @click="unreject(leaveApplication)"
                 class="btn btn-danger hover-background btn-sm m-1"
@@ -142,19 +109,7 @@ const unreject = (leaveApplication) => {
                 "
                 disabled
             >
-                Supervisor
-            </button>
-            <button
-                class="btn btn-sm m-1"
-                style="
-                    background-color: gray;
-                    color: white;
-                    opacity: 0.5;
-                    cursor: not-allowed;
-                "
-                disabled
-            >
-                Reject
+                Need Supervisor Approval
             </button>
         </span>
         <span v-else-if="leaveApplication.status === 'Need Manager Approval'">
@@ -181,6 +136,8 @@ const unreject = (leaveApplication) => {
             >
                 Disapprove
             </button>
+        </span>
+        <span v-else-if="leaveApplication.status === 'Rejected by Supervisor'">
             <button
                 class="btn btn-sm m-1"
                 style="
@@ -191,32 +148,10 @@ const unreject = (leaveApplication) => {
                 "
                 disabled
             >
-                Reject
-            </button>
-        </span>
-        <span v-else-if="leaveApplication.status === 'Rejected by Supervisor'">
-            <button
-                class="btn btn-danger hover-background btn-sm m-1"
-                style="color: white"
-                disabled
-            >
-                Supervisor Rejected
-            </button>
-            <button
-                class="btn btn-danger hover-background btn-sm m-1"
-                style="color: white"
-            >
-                Supervisor Rejected
+                Rejected by Supervisor
             </button>
         </span>
         <span v-else-if="leaveApplication.status === 'Rejected by Manager'">
-            <button
-                class="btn btn-danger hover-background btn-sm m-1"
-                style="color: white"
-                disabled
-            >
-                Rejected
-            </button>
             <button
                 @click="unreject(leaveApplication)"
                 class="btn btn-danger hover-background btn-sm m-1"

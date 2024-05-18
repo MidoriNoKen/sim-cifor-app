@@ -9,14 +9,12 @@ const loggedRole = usePage().props.loggedRole;
 const leaveApplication = usePage().props.leaveApplication;
 
 const form = useForm({
-    supervisor_reject_reasons: "",
-    manager_reject_reasons: "",
+    reasons: "",
 });
 
 const handleSubmit = () => {
     const data = {
-        supervisor_reject_reasons: form.supervisor_reject_reasons,
-        manager_reject_reasons: form.manager_reject_reasons,
+        reasons: form.reasons,
     };
     Inertia.post(`/leave-applications/${leaveApplication.id}/reject`, data);
 };
@@ -41,21 +39,9 @@ const handleSubmit = () => {
                         </header>
                         <div class="form-group row">
                             <form @submit.prevent="handleSubmit">
-                                <div
-                                    v-if="leaveApplication.isSupervisor"
-                                    class="col-md-10 mb-4 mt-4"
-                                >
+                                <div class="col-md-10 mb-4 mt-4">
                                     <textarea
-                                        v-model="form.supervisor_reject_reasons"
-                                        class="form-control"
-                                    ></textarea>
-                                </div>
-                                <div
-                                    v-if="leaveApplication.isManager"
-                                    class="col-md-10 mb-4 mt-4"
-                                >
-                                    <textarea
-                                        v-model="form.manager_reject_reasons"
+                                        v-model="form.reasons"
                                         class="form-control"
                                     ></textarea>
                                 </div>

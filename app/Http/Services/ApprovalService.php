@@ -71,13 +71,13 @@ class ApprovalService
         $this->checkAccess($userId, $role, $position);
         $this->checkStatus($data->status, $status);
 
-        if ($this->loggedRole == PositionEnum::MANAGER)
+        if ($this->loggedPosition == PositionEnum::MANAGER)
             $data->manager_reject_reasons = $reasons;
 
-        else if ($this->loggedRole == PositionEnum::SENIOR)
+        else if ($this->loggedPosition == PositionEnum::SENIOR)
             $data->supervisor_reject_reasons = $reasons;
 
-        else if ($this->loggedRole == PositionEnum::FINANCE)
+        else if ($this->loggedPosition == PositionEnum::FINANCE)
             $data->finance_reject_reasons = $reasons;
 
         $data->status = $updatedStatus;

@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\RoleEnum;
 use App\Http\Controllers\LeaveApplicationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
@@ -69,7 +70,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/travel-authorisations/{id}/reject', [TravelAuthorisationController::class, 'reject'])->name('travelAuthorisations.reject');
     Route::post('/travel-authorisations/{id}/unreject', [TravelAuthorisationController::class, 'unreject'])->name('travelAuthorisations.unreject');
 
-    Route::group(['middleware' => RoleCheck::class . ':admin'], function () {
+    Route::group(['middleware' => RoleCheck::class . ':' . RoleEnum::ADMIN], function () {
         Route::resource('/users', UserController::class);
     });
 });

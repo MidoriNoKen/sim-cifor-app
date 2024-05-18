@@ -1,4 +1,5 @@
 <script setup>
+import { Inertia } from "@inertiajs/inertia";
 import { router } from "@inertiajs/vue3";
 import { defineProps } from "vue";
 const props = defineProps(["travelAuthorisation"]);
@@ -10,44 +11,20 @@ const showTravelAuthorisation = (travelAuthorisation) => {
     );
 };
 
-const approveBySupervisor = (travelAuthorisation) => {
-    router.post(
-        `/travel-authorisations/${travelAuthorisation.id}/approve-by-supervisor`
-    );
+const approve = (travelAuthorisation) => {
+    Inertia.post(`/travel-authorisations/${travelAuthorisation.id}/approve`);
 };
 
-const disapproveBySupervisor = (travelAuthorisation) => {
-    router.post(
-        `/travel-authorisations/${travelAuthorisation.id}/disapprove-by-supervisor`
-    );
+const disapprove = (travelAuthorisation) => {
+    Inertia.post(`/travel-authorisations/${travelAuthorisation.id}/disapprove`);
 };
 
-const rejectBySupervisor = (travelAuthorisation) => {
+const reject = (travelAuthorisation) => {
     router.get(`/travel-authorisations/${travelAuthorisation.id}/reject`);
 };
 
-const unrejectBySupervisor = (travelAuthorisation) => {
-    router.post(`/travel-authorisations/${travelAuthorisation.id}/unreject`);
-};
-
-const approveByManager = (travelAuthorisation) => {
-    router.post(
-        `/travel-authorisations/${travelAuthorisation.id}/approve-by-manager`
-    );
-};
-
-const disapproveByManager = (travelAuthorisation) => {
-    router.post(
-        `/travel-authorisations/${travelAuthorisation.id}/disapprove-by-manager`
-    );
-};
-
-const rejectByManager = (travelAuthorisation) => {
-    router.get(`/travel-authorisations/${travelAuthorisation.id}/reject`);
-};
-
-const unrejectByManager = (travelAuthorisation) => {
-    router.post(`/travel-authorisations/${travelAuthorisation.id}/unreject`);
+const unreject = (travelAuthorisation) => {
+    Inertia.post(`/travel-authorisations/${travelAuthorisation.id}/unreject`);
 };
 </script>
 
@@ -62,14 +39,14 @@ const unrejectByManager = (travelAuthorisation) => {
     <div v-if="travelAuthorisation.isSupervisor">
         <span v-if="travelAuthorisation.status === 'Need Supervisor Approval'">
             <button
-                @click="approveBySupervisor(travelAuthorisation)"
+                @click="approve(travelAuthorisation)"
                 class="btn btn-success hover-background btn-sm m-1"
                 style="color: white"
             >
                 Approve
             </button>
             <button
-                @click="rejectBySupervisor(travelAuthorisation)"
+                @click="reject(travelAuthorisation)"
                 class="btn btn-warning hover-background btn-sm m-1"
                 style="color: white"
             >
@@ -80,23 +57,11 @@ const unrejectByManager = (travelAuthorisation) => {
             v-else-if="travelAuthorisation.status === 'Need Manager Approval'"
         >
             <button
-                @click="disapproveBySupervisor(travelAuthorisation)"
+                @click="disapprove(travelAuthorisation)"
                 class="btn btn-danger hover-background btn-sm m-1"
                 style="color: white"
             >
                 Disapprove
-            </button>
-            <button
-                class="btn btn-sm m-1"
-                style="
-                    background-color: gray;
-                    color: white;
-                    opacity: 0.5;
-                    cursor: not-allowed;
-                "
-                disabled
-            >
-                Reject
             </button>
         </span>
         <span v-else-if="travelAuthorisation.status === 'Approved'">
@@ -112,6 +77,8 @@ const unrejectByManager = (travelAuthorisation) => {
             >
                 Approved
             </button>
+        </span>
+        <span v-else-if="travelAuthorisation.status === 'Rejected by Finance'">
             <button
                 class="btn btn-sm m-1"
                 style="
@@ -122,37 +89,28 @@ const unrejectByManager = (travelAuthorisation) => {
                 "
                 disabled
             >
-                Reject
+                Rejected by Finance
             </button>
         </span>
         <span v-else-if="travelAuthorisation.status === 'Rejected by Manager'">
             <button
-                class="btn btn-danger hover-background btn-sm m-1"
-                style="color: white"
+                class="btn btn-sm m-1"
+                style="
+                    background-color: gray;
+                    color: white;
+                    opacity: 0.5;
+                    cursor: not-allowed;
+                "
                 disabled
             >
-                Manager Rejected
-            </button>
-            <button
-                class="btn btn-danger hover-background btn-sm m-1"
-                style="color: white"
-                disabled
-            >
-                Manager Rejected
+                Rejected by Manager
             </button>
         </span>
         <span
             v-else-if="travelAuthorisation.status === 'Rejected by Supervisor'"
         >
             <button
-                class="btn btn-danger hover-background btn-sm m-1"
-                style="color: white"
-                disabled
-            >
-                Rejected
-            </button>
-            <button
-                @click="unrejectBySupervisor(travelAuthorisation)"
+                @click="unreject(travelAuthorisation)"
                 class="btn btn-danger hover-background btn-sm m-1"
                 style="color: white"
             >
@@ -172,8 +130,37 @@ const unrejectByManager = (travelAuthorisation) => {
                 "
                 disabled
             >
-                Supervisor
+                Need Supervisor Approval
             </button>
+        </span>
+        <span
+            v-else-if="travelAuthorisation.status === 'Need Manager Approval'"
+        >
+            <button
+                @click="approve(travelAuthorisation)"
+                class="btn btn-success hover-background btn-sm m-1"
+                style="color: white"
+            >
+                Approve
+            </button>
+            <button
+                @click="reject(travelAuthorisation)"
+                class="btn btn-success hover-background btn-sm m-1"
+                style="color: white"
+            >
+                Reject
+            </button>
+        </span>
+        <span v-if="travelAuthorisation.status === 'Need Finance Approval'">
+            <button
+                @click="disapprove(travelAuthorisation)"
+                class="btn btn-danger hover-background btn-sm m-1"
+                style="color: white"
+            >
+                Disapprove
+            </button>
+        </span>
+        <span v-else-if="travelAuthorisation.status === 'Approved'">
             <button
                 class="btn btn-sm m-1"
                 style="
@@ -184,21 +171,90 @@ const unrejectByManager = (travelAuthorisation) => {
                 "
                 disabled
             >
-                Reject
+                Approved
+            </button>
+        </span>
+        <span
+            v-else-if="travelAuthorisation.status === 'Rejected by Supervisor'"
+        >
+            <button
+                class="btn btn-sm m-1"
+                style="
+                    background-color: gray;
+                    color: white;
+                    opacity: 0.5;
+                    cursor: not-allowed;
+                "
+                disabled
+            >
+                Rejected by Supervisor
+            </button>
+        </span>
+        <span v-else-if="travelAuthorisation.status === 'Rejected by Manager'">
+            <button
+                @click="unreject(travelAuthorisation)"
+                class="btn btn-danger hover-background btn-sm m-1"
+                style="color: white"
+            >
+                Unreject
+            </button>
+        </span>
+        <span v-else-if="travelAuthorisation.status === 'Rejected by Finance'">
+            <button
+                class="btn btn-sm m-1"
+                style="
+                    background-color: gray;
+                    color: white;
+                    opacity: 0.5;
+                    cursor: not-allowed;
+                "
+                disabled
+            >
+                Rejected by Finance
+            </button>
+        </span>
+    </div>
+    <div v-else-if="travelAuthorisation.isFinance">
+        <span v-if="travelAuthorisation.status === 'Need Supervisor Approval'">
+            <button
+                class="btn btn-sm m-1"
+                style="
+                    background-color: gray;
+                    color: white;
+                    opacity: 0.5;
+                    cursor: not-allowed;
+                "
+                disabled
+            >
+                Need Supervisor Approval
             </button>
         </span>
         <span
             v-else-if="travelAuthorisation.status === 'Need Manager Approval'"
         >
             <button
-                @click="approveByManager(travelAuthorisation)"
+                class="btn btn-sm m-1"
+                style="
+                    background-color: gray;
+                    color: white;
+                    opacity: 0.5;
+                    cursor: not-allowed;
+                "
+                disabled
+            >
+                Need Manager Approval
+            </button>
+        </span>
+        <span v-if="travelAuthorisation.status === 'Need Finance Approval'">
+            <button
+                @click="approve(travelAuthorisation)"
                 class="btn btn-success hover-background btn-sm m-1"
                 style="color: white"
             >
                 Approve
             </button>
             <button
-                @click="rejectByManager(travelAuthorisation)"
+                @click="reject(travelAuthorisation)"
                 class="btn btn-success hover-background btn-sm m-1"
                 style="color: white"
             >
@@ -207,12 +263,16 @@ const unrejectByManager = (travelAuthorisation) => {
         </span>
         <span v-else-if="travelAuthorisation.status === 'Approved'">
             <button
-                @click="disapproveByManager(travelAuthorisation)"
+                @click="disapprove(travelAuthorisation)"
                 class="btn btn-danger hover-background btn-sm m-1"
                 style="color: white"
             >
                 Disapprove
             </button>
+        </span>
+        <span
+            v-else-if="travelAuthorisation.status === 'Rejected by Supervisor'"
+        >
             <button
                 class="btn btn-sm m-1"
                 style="
@@ -223,36 +283,26 @@ const unrejectByManager = (travelAuthorisation) => {
                 "
                 disabled
             >
-                Reject
-            </button>
-        </span>
-        <span
-            v-else-if="travelAuthorisation.status === 'Rejected by Supervisor'"
-        >
-            <button
-                class="btn btn-danger hover-background btn-sm m-1"
-                style="color: white"
-                disabled
-            >
-                Supervisor Rejected
-            </button>
-            <button
-                class="btn btn-danger hover-background btn-sm m-1"
-                style="color: white"
-            >
-                Supervisor Rejected
+                Rejected by Supervisor
             </button>
         </span>
         <span v-else-if="travelAuthorisation.status === 'Rejected by Manager'">
             <button
-                class="btn btn-danger hover-background btn-sm m-1"
-                style="color: white"
+                class="btn btn-sm m-1"
+                style="
+                    background-color: gray;
+                    color: white;
+                    opacity: 0.5;
+                    cursor: not-allowed;
+                "
                 disabled
             >
-                Rejected
+                Rejected by Manager
             </button>
+        </span>
+        <span v-else-if="travelAuthorisation.status === 'Rejected by Finance'">
             <button
-                @click="unrejectByManager(travelAuthorisation)"
+                @click="unreject(travelAuthorisation)"
                 class="btn btn-danger hover-background btn-sm m-1"
                 style="color: white"
             >

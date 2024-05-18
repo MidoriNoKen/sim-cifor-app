@@ -98,7 +98,7 @@ class TravelAuthorisationController extends Controller
     {
         $travelAuthorisation = $this->travelAuthorisationService->getById($id);
         if ($this->loggedPosition === PositionEnum::SENIOR)
-        $this->approvalService->rejection($travelAuthorisation, $travelAuthorisation->supervisor_id, RoleEnum::STAFF, PositionEnum::SENIOR, ApprovalStatusEnum::SUPERVISOR_PENDING, ApprovalStatusEnum::MANAGER_REJECTED, $request->reasons);
+        $this->approvalService->rejection($travelAuthorisation, $travelAuthorisation->supervisor_id, RoleEnum::STAFF, PositionEnum::SENIOR, ApprovalStatusEnum::SUPERVISOR_PENDING, ApprovalStatusEnum::SUPERVISOR_REJECTED, $request->reasons);
 
         else if ($this->loggedPosition === PositionEnum::MANAGER)
         $this->approvalService->rejection($travelAuthorisation, $travelAuthorisation->manager_id, RoleEnum::MANAGER, PositionEnum::MANAGER, ApprovalStatusEnum::MANAGER_PENDING, ApprovalStatusEnum::MANAGER_REJECTED, $request->reasons);
