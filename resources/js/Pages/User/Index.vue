@@ -4,6 +4,14 @@ import { Head, router, usePage } from "@inertiajs/vue3";
 
 const users = usePage().props.users;
 
+const showUser = (user) => {
+    router.get(`/users/${user.id}`);
+};
+
+const createUser = () => {
+    router.get(`/users/create`);
+};
+
 const editUser = (user) => {
     router.get(`/users/${user.id}/edit`, user);
 };
@@ -13,14 +21,9 @@ const deleteUser = (user) => {
         router.delete(`/users/${user.id}`);
     }
 };
-
-const createUser = () => {
-    router.get(`/users/create`);
-};
 </script>
 
 <template>
-
     <Head title="User" />
 
     <AuthenticatedLayout>
@@ -56,12 +59,24 @@ const createUser = () => {
                                     <td>{{ user.manager }}</td>
                                     <td>{{ user.born_date }}</td>
                                     <td>
-                                        <button @click="editUser(user)"
-                                            class="btn btn-warning hover-background btn-sm m-1" style="color: white">
+                                        <button
+                                            @click="showUser(user)"
+                                            class="btn btn-primary hover-background btn-sm m-1"
+                                            style="color: white"
+                                        >
+                                            Show
+                                        </button>
+                                        <button
+                                            @click="editUser(user)"
+                                            class="btn btn-warning hover-background btn-sm m-1"
+                                            style="color: white"
+                                        >
                                             Edit
                                         </button>
-                                        <button @click="deleteUser(user)"
-                                            class="btn btn-danger hover-background btn-sm m-1">
+                                        <button
+                                            @click="deleteUser(user)"
+                                            class="btn btn-danger hover-background btn-sm m-1"
+                                        >
                                             Delete
                                         </button>
                                     </td>
@@ -69,8 +84,11 @@ const createUser = () => {
                             </tbody>
                         </table>
                         <div class="text-center">
-                            <button @click="createUser()" class="btn btn-primary hover-background btn-sm m-1"
-                                style="color: white">
+                            <button
+                                @click="createUser()"
+                                class="btn btn-primary hover-background btn-sm m-1"
+                                style="color: white"
+                            >
                                 Create
                             </button>
                         </div>

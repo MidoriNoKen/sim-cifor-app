@@ -17,6 +17,7 @@ const props = defineProps(["form"]);
             class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
             id="priority"
             v-model="form.priority"
+            required
         >
             <option value="null" disabled>Select Priority</option>
             <option

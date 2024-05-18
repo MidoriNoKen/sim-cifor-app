@@ -39,7 +39,7 @@ class LeaveApplicationController extends Controller
     public function show($id)
     {
         $leaveApplication = $this->leaveApplicationService->getById($id);
-        $user = $this->userService->getUserById($leaveApplication->applicant_id);
+        $user = $this->userService->getUserByIdWithRelations($leaveApplication->applicant_id);
         $this->approvalService->formattedData($leaveApplication);
 
         return Inertia::render('LeaveApplication/Show')->with(['user' => $user, 'leaveApplication' => $leaveApplication, 'loggedRole' => $this->loggedRole]);

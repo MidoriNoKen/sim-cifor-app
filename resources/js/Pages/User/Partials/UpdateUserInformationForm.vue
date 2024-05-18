@@ -9,16 +9,16 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { useForm, usePage } from "@inertiajs/vue3";
 
-const user = usePage().props.user;
-const loggedRole = usePage().props.loggedRole;
+const { user, loggedRole, supervisors, managers, roles, positions } =
+    usePage().props;
 
 const form = useForm({
     name: user.name,
     email: user.email,
-    role: user.role,
+    role_id: user.role_id,
     position: user.position,
-    supervisor: user.supervisor,
-    manager: user.manager,
+    supervisor_id: user.supervisor_id,
+    manager_id: user.manager_id,
     born_date: user.born_date,
 });
 </script>
@@ -67,10 +67,26 @@ const form = useForm({
                 <InputError class="mt-2" :message="form.errors.email" />
             </div>
 
-            <OptionRoleList :form="form" v-model="form.role" />
-            <OptionPositionList :form="form" v-model="form.position" />
-            <OptionSupervisorList :form="form" v-model="form.supervisor" />
-            <OptionManagerList :form="form" v-model="form.manager" />
+            <OptionRoleList
+                :form="form"
+                v-model="form.role_id"
+                :roles="roles"
+            />
+            <OptionPositionList
+                :form="form"
+                v-model="form.position"
+                :positions="positions"
+            />
+            <OptionSupervisorList
+                :form="form"
+                v-model="form.supervisor_id"
+                :supervisors="supervisors"
+            />
+            <OptionManagerList
+                :form="form"
+                v-model="form.manager_id"
+                :managers="managers"
+            />
 
             <div class="mt-4">
                 <InputLabel for="born_date" value="Born Date" />

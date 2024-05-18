@@ -39,7 +39,7 @@ class TravelAuthorisationController extends Controller
     public function show($id)
     {
         $travelAuthorisation = $this->travelAuthorisationService->getById($id);
-        $user = $this->userService->getUserById($travelAuthorisation->applicant_id);
+        $user = $this->userService->getUserByIdWithRelations($travelAuthorisation->applicant_id);
         $this->approvalService->formattedData($travelAuthorisation);
 
         return Inertia::render('TravelAuthorisation/Show')->with(['user' => $user, 'travelAuthorisation' => $travelAuthorisation, 'loggedRole' => $this->loggedRole]);

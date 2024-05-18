@@ -6,6 +6,7 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TravelAuthorisationController;
 use App\Http\Controllers\UserController;
+use App\Http\Middleware\RoleCheck;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -27,8 +28,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
-    Route::resource('/users', UserController::class);
 
     Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
     Route::get('/projects/create', [ProjectController::class, 'create'])->name('projects.create');
@@ -69,6 +68,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/travel-authorisations/{id}/reject', [TravelAuthorisationController::class, 'rejectPage'])->name('travelAuthorisations.rejectPage');
     Route::post('/travel-authorisations/{id}/reject', [TravelAuthorisationController::class, 'reject'])->name('travelAuthorisations.reject');
     Route::post('/travel-authorisations/{id}/unreject', [TravelAuthorisationController::class, 'unreject'])->name('travelAuthorisations.unreject');
+
+    Route::group(['middleware' => RoleCheck::class . ':admin'], function () {
+        Route::resource('/users', UserController::class);
+    });
 });
 
 

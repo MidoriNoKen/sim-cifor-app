@@ -20,7 +20,6 @@ class RoleCheck
                 return $next($request);
             }
         }
-        Auth::logout();
-        return redirect()->route('login')->with('status','You are not authorized to access this page.');
+        return redirect()->route('dashboard')->withErrors('You are not authorized to access this page.');
     }
 }
