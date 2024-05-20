@@ -12,4 +12,14 @@ class ApprovalStatusEnum
     public const FINANCE_PENDING = 'Need Finance Approval';
     public const FINANCE_REJECTED = 'Rejected by Finance';
     public const APPROVED = 'Approved';
+    public const STATUSES = [
+        self::NEW,
+        self::SUPERVISOR_PENDING,
+        self::SUPERVISOR_REJECTED,
+        self::MANAGER_PENDING,
+        self::MANAGER_REJECTED,
+        self::FINANCE_PENDING,
+        self::FINANCE_REJECTED,
+        self::APPROVED
+    ];
 }

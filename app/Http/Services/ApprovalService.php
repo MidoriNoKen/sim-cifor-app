@@ -37,6 +37,7 @@ class ApprovalService
     public function checkAccess($userId, $role, $position)
     {
         try {
+            dd($this->loggedId, $userId, $this->loggedRole, $role, $this->loggedPosition, $position);
             return ($this->loggedId == $userId && $this->loggedRole == $role && $this->loggedPosition == $position)
                     ? true
                     : throw new Exception("You don't have access to this data.");

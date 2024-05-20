@@ -3,7 +3,6 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
@@ -16,7 +15,7 @@ class LeaveApplicationMail extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct(private $name, private $email, private $status)
+    public function __construct(private $sender, private $receiver, private $status, private $statuses)
     {
         //
     }
@@ -27,7 +26,7 @@ class LeaveApplicationMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Leave Application',
+            subject: 'Leave Application - ' . $this->status,
         );
     }
 
@@ -38,7 +37,7 @@ class LeaveApplicationMail extends Mailable
     {
         return new Content(
             view: 'Mail.LeaveApplication',
-            with: ['name' => $this->name, 'email' => $this->email, 'status' => $this->status],
+            with: ['sender' => $this->sender, 'receiver' => $this->receiver, 'status' => $this->status, 'statuses' => $this->statuses],
         );
     }
 

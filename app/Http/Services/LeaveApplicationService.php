@@ -75,6 +75,8 @@ class LeaveApplicationService
             if (!$leaveApplication) {
                 Throw new Exception("An error occurred while storing the leave application.");
             }
+
+            return $leaveApplication;
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
         }

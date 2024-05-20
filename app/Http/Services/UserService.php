@@ -26,7 +26,7 @@ class UserService
 
     public function getUserByIdWithRelations($id)
     {
-        $user = User::find($id)->load('role');
+        $user = User::find($id);
         $supervisor = User::find($user->supervisor_id);
         $manager = User::find($user->manager_id);
         $user->supervisor = $supervisor ? $supervisor->name : null;
@@ -38,6 +38,13 @@ class UserService
     public function getUserByIdWithRole($id)
     {
         return User::find($id)->load('role');
+    }
+
+    public function getProjectManager() {
+        $admin = Role::where('name', RoleEnum::ADMIN)->value('id');
+        return User::whereNotIn('role_id', [$admin])
+            ->whereNotIn('position', [PositionEnum::JUNIOR])
+            ->get();
     }
 
     public function getLoggedUser()

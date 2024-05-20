@@ -8,21 +8,23 @@ use App\Enums\RoleEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Services\ApprovalService;
 use App\Http\Services\LeaveApplicationService;
+use App\Http\Services\NotificationService;
 use App\Http\Services\UserService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class LeaveApplicationController extends Controller
 {
-    private $leaveApplicationService, $approvalService, $userService, $loggedRole, $loggedPosition;
+    private $leaveApplicationService, $approvalService, $userService, $loggedRole, $loggedPosition, $notificationService;
 
-    public function __construct(LeaveApplicationService $leaveApplicationService, ApprovalService $approvalService, UserService $userService)
+    public function __construct(LeaveApplicationService $leaveApplicationService, ApprovalService $approvalService, UserService $userService, NotificationService $notificationService)
     {
         $this->leaveApplicationService = $leaveApplicationService;
         $this->approvalService = $approvalService;
         $this->userService = $userService;
         $this->loggedRole = $userService->getLoggedRole();
         $this->loggedPosition = $userService->getLoggedPosition();
+        $this->notificationService = $notificationService;
     }
 
     public function index()
@@ -52,18 +54,34 @@ class LeaveApplicationController extends Controller
 
     public function store(Request $request)
     {
-        $this->leaveApplicationService->store($request);
+        $result = $this->leaveApplicationService->store($request);
+        if ($result != null) {
+            $applicant = $this->userService->getUserByIdWithRelations($result->applicant_id);
+            $supervisor = $this->userService->getUserById($applicant->supervisor_id);
+            $this->notificationService->sendMail($supervisor, $applicant, ApprovalStatusEnum::NEW);
+            $this->notificationService->sendMail($applicant, $supervisor, ApprovalStatusEnum::SUPERVISOR_PENDING);
+        }
         return redirect()->route('leaveApplications.index');
     }
 
     public function approve($id)
     {
         $leaveApplication = $this->leaveApplicationService->getById($id);
-        if ($this->loggedPosition === PositionEnum::SENIOR)
-        $this->approvalService->approval($leaveApplication, $leaveApplication->supervisor_id, RoleEnum::STAFF, PositionEnum::SENIOR, ApprovalStatusEnum::SUPERVISOR_PENDING, ApprovalStatusEnum::MANAGER_PENDING);
+        $applicant = $this->userService->getUserByIdWithRelations($leaveApplication->applicant_id);
+        $supervisor = $this->userService->getUserById($applicant->supervisor_id);
+        $manager = $this->userService->getUserById($applicant->manager_id);
 
-        else if ($this->loggedPosition === PositionEnum::MANAGER)
-        $this->approvalService->approval($leaveApplication, $leaveApplication->supervisor_id, RoleEnum::MANAGER, PositionEnum::MANAGER, ApprovalStatusEnum::MANAGER_PENDING, ApprovalStatusEnum::APPROVED);
+        if ($this->loggedPosition === PositionEnum::SENIOR){
+            $this->approvalService->approval($leaveApplication, $leaveApplication->supervisor_id, RoleEnum::STAFF, PositionEnum::SENIOR, ApprovalStatusEnum::SUPERVISOR_PENDING, ApprovalStatusEnum::MANAGER_PENDING);
+            $this->notificationService->sendMail($supervisor, $applicant, ApprovalStatusEnum::MANAGER_PENDING);
+            $this->notificationService->sendMail($applicant, $manager, ApprovalStatusEnum::MANAGER_PENDING);
+        }
+
+        else if ($this->loggedPosition === PositionEnum::MANAGER) {
+            $this->approvalService->approval($leaveApplication, $leaveApplication->supervisor_id, RoleEnum::MANAGER, PositionEnum::MANAGER, ApprovalStatusEnum::MANAGER_PENDING, ApprovalStatusEnum::APPROVED);
+            $this->notificationService->sendMail($manager, $applicant, ApprovalStatusEnum::APPROVED);
+            $this->notificationService->sendMail($applicant, $manager, ApprovalStatusEnum::APPROVED);
+        }
 
         return Inertia::location(route('leaveApplications.index'));
     }

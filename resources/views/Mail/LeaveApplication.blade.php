@@ -21,15 +21,37 @@
                 <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
                     <div class="table-responsive">
                         <table class="table align-middle text-center">
+                            @if ($receiver->position == 'Supervisor' || $receiver->position == 'Manager' || $receiver->position == 'Finance')
                             <div class="card">
-                                <div class="card-header">Leave Application Reminder</div>
+                                <div class="card-header">Leave Application Approval Reminder - {{ $status }}</div>
                                 <div class="card-body">
-                                    <p class="lead">Halo {{ $name }},</p>
-                                    <p>Kami ingin mengingatkan Anda terkait pengajuan izin cuti Anda. Mohon untuk memeriksa status pengajuan izin cuti Anda dan pastikan semua persyaratan terpenuhi.</p>
+                                    <p class="lead">Halo {{ $receiver->name }},</p>
+                                    <p>Kami ingin memberitahu bahwa Anda mendapatkan pengajuan izin cuti dari {{ $sender->name }}. Mohon untuk memeriksa status pengajuan izin cuti tersebut dan pastikan semua persyaratan terpenuhi.</p>
                                     <p>Terima kasih atas perhatiannya.</p>
-                                    <p class="font-weight-bold">Salam,<br><br><br>Tim Manajemen Leave Application</p>
+                                    <p class="font-weight-bold">Salam,<br><br><br>Admin SIM Cifor</p>
                                 </div>
                             </div>
+                            @elseif ($status == 'New')
+                            <div class="card">
+                                <div class="card-header">Leave Application Notification - {{ $status }}</div>
+                                <div class="card-body">
+                                    <p class="lead">Halo {{ $receiver->name }},</p>
+                                    <p>Pengajuan izin cuti Anda masih diproses. Mohon untuk menunggu persetujuan pengajuan izin cuti dari {{ $sender->name }}.</p>
+                                    <p>Terima kasih atas perhatiannya.</p>
+                                    <p class="font-weight-bold">Salam,<br><br><br>Admin SIM Cifor</p>
+                                </div>
+                            </div>
+                            @else
+                            <div class="card">
+                                <div class="card-header">Leave Application Notification - {{ $status }}</div>
+                                <div class="card-body">
+                                    <p class="lead">Halo {{ $receiver->name }},</p>
+                                    <p>Kami ingin menginformasikan bahwa status pengajuan diperbarui menjadi {{ $status }}. Telah diperbarui oleh {{ $sender->name }}.</p>
+                                    <p>Terima kasih atas perhatiannya.</p>
+                                    <p class="font-weight-bold">Salam,<br><br><br>Admin SIM Cifor</p>
+                                </div>
+                            </div>
+                            @endif
                         </table>
                     </div>
                 </div>

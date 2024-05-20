@@ -1,7 +1,6 @@
 <script setup>
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
-import { usePage } from "@inertiajs/vue3";
 
 const props = defineProps(["form", "roles"]);
 </script>
