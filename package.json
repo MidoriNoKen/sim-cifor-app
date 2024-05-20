@@ -18,6 +18,8 @@
         "vue": "^3.4.0"
     },
     "dependencies": {
+        "@coreui/coreui-pro": "^5.1.0",
+        "@coreui/vue-pro": "^5.1.0",
         "@inertiajs/inertia": "^0.11.1",
         "@inertiajs/inertia-vue3": "^0.6.0"
     }

@@ -38,6 +38,8 @@ class TravelAuthorisationService
         else if ($roleName === RoleEnum::MANAGER && $position === PositionEnum::MANAGER)
         $query->where("applicant_id", $userId)->orWhere("manager_id", $userId);
 
+        $query->orderBy('start_date', 'desc');
+
         return $query->get();
     }
 
@@ -46,8 +48,8 @@ class TravelAuthorisationService
         try {
             $validation = $request->validate([
                 'transport_type' => 'required|string',
-                'start_date' => 'required|string',
-                'end_date' => 'required|string',
+                'start_date' => 'required|string|date|before:end_date',
+                'end_date' => 'required|string|date|after_or_equal:start_date',
                 'accomodation_detail' => 'required|string',
                 'travel_reasons' => 'required|string',
             ]);
@@ -55,6 +57,9 @@ class TravelAuthorisationService
             if (!$validation) {
                 Throw new Exception("Invalid input data.");
             }
+
+            $start_date = date('Y-m-d H:i:s', strtotime($request->start_date));
+            $end_date = date('Y-m-d H:i:s', strtotime($request->end_date));
 
             $travelAuthorisation = TravelAuthorisation::create([
                 'applicant_id' => auth()->id(),
@@ -67,8 +72,8 @@ class TravelAuthorisationService
                 'finance_reject_reasons' => null,
                 'unit_id' => 1,
                 'transport_type' => $request->transport_type,
-                'start_date' => $request->start_date,
-                'end_date' => $request->end_date,
+                'start_date' => $start_date,
+                'end_date' => $end_date,
                 'accumulation' => Util::getDateTimeDifference($request->start_date, $request->end_date),
                 'accomodation_detail' => $request->accomodation_detail,
                 'travel_reasons' => $request->travel_reasons,

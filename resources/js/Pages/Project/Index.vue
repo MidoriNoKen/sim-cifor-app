@@ -76,7 +76,7 @@ const createProject = () => {
                                         </button>
                                         <button
                                             @click="deleteProject(project)"
-                                            class="btn btn-danger hover-background btn-sm m-1"
+                                            class="btn btn-danger text-white hover-background btn-sm m-1"
                                         >
                                             Delete
                                         </button>

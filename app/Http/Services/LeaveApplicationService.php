@@ -38,6 +38,8 @@ class LeaveApplicationService
         else if ($roleName === RoleEnum::MANAGER && $position === PositionEnum::MANAGER)
         $query->where("applicant_id", $userId)->orWhere("manager_id", $userId);
 
+        $query->orderBy('start_date', 'desc');
+
         return $query->get();
     }
 
@@ -46,13 +48,16 @@ class LeaveApplicationService
         try {
             $validation = $request->validate([
                 'leave_type' => 'required|string',
-                'start_date' => 'required|string',
-                'end_date' => 'required|string',
+                'start_date' => 'required|string|date|before:end_date',
+                'end_date' => 'required|string|date|after_or_equal:start_date',
             ]);
 
             if (!$validation) {
                 Throw new Exception("Invalid input data.");
             }
+
+            $start_date = date('Y-m-d H:i:s', strtotime($request->start_date));
+            $end_date = date('Y-m-d H:i:s', strtotime($request->end_date));
 
             $leaveApplication = LeaveApplication::create([
                 'applicant_id' => auth()->id(),
@@ -61,8 +66,8 @@ class LeaveApplicationService
                 'supervisor_reject_reasons' => null,
                 'manager_id' => auth()->user()->manager_id,
                 'manager_reject_reasons' => null,
-                'start_date' => $request->start_date,
-                'end_date' => $request->end_date,
+                'start_date' => $start_date,
+                'end_date' => $end_date,
                 'accumulation' => Util::getDateTimeDifference($request->start_date, $request->end_date),
                 'leave_type' => $request->leave_type,
             ]);

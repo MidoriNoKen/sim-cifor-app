@@ -38,9 +38,11 @@ const showingNavigationDropdown = ref(false);
                                 >
                                     Dashboard
                                 </NavLink>
-                                <NavLink v-if="role == 'Admin'">
+                                <NavLink
+                                    v-if="role == 'Admin'"
                                     :href="route('users.index')"
-                                    :active="route().current('users.index')" >
+                                    :active="route().current('users.index')"
+                                >
                                     Users
                                 </NavLink>
                                 <NavLink

@@ -3,6 +3,7 @@ import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import { usePage, useForm } from "@inertiajs/vue3";
+import { CDateRangePicker } from "@coreui/vue-pro";
 
 const loggedRole = usePage().props.loggedRole;
 
@@ -48,28 +49,18 @@ const form = useForm({
             <InputError class="mt-2" :message="form.errors.transport_type" />
         </div>
         <div class="mt-4">
-            <InputLabel for="start_date" value="Start Date" />
+            <InputLabel for="dateRange" value="Date" />
 
-            <input
-                id="start_date"
-                type="datetime-local"
-                class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                v-model="form.start_date"
+            <CDateRangePicker
+                id="dateRange"
+                name="dateRange"
+                locale="id-ID"
+                v-model:start-date="form.start_date"
+                v-model:end-date="form.end_date"
+                timepicker
                 required
             />
-            <InputError class="mt-2" :message="form.errors.start_date" />
-        </div>
-        <div class="mt-4">
-            <InputLabel for="end_date" value="End Date" />
-
-            <input
-                id="end_date"
-                type="datetime-local"
-                class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                v-model="form.end_date"
-                required
-            />
-            <InputError class="mt-2" :message="form.errors.end_date" />
+            <InputError class="mt-2" :message="form.errors.date" />
         </div>
         <div class="mt-4">
             <InputLabel
@@ -81,6 +72,7 @@ const form = useForm({
                 id="accomodation_detail"
                 class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                 v-model="form.accomodation_detail"
+                required
             ></textarea>
             <InputError
                 class="mt-2"
@@ -94,6 +86,7 @@ const form = useForm({
                 id="travel_reasons"
                 class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                 v-model="form.travel_reasons"
+                required
             ></textarea>
             <InputError class="mt-2" :message="form.errors.travel_reasons" />
         </div>

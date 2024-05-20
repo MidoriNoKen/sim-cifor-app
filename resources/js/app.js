@@ -1,4 +1,5 @@
 import "./bootstrap";
+import "@coreui/coreui-pro/dist/css/coreui.min.css";
 import "../css/app.css";
 
 import { createApp, h } from "vue";
