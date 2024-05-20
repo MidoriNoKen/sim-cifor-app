@@ -9,14 +9,14 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class LeaveApplication extends Mailable
+class LeaveApplicationMail extends Mailable
 {
     use Queueable, SerializesModels;
 
     /**
      * Create a new message instance.
      */
-    public function __construct()
+    public function __construct(private $name, private $email, private $status)
     {
         //
     }
@@ -37,7 +37,8 @@ class LeaveApplication extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'view.name',
+            view: 'Mail.LeaveApplication',
+            with: ['name' => $this->name, 'email' => $this->email, 'status' => $this->status],
         );
     }
 

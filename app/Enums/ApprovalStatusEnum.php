@@ -4,6 +4,7 @@ namespace App\Enums;
 
 class ApprovalStatusEnum
 {
+    public const NEW = 'New';
     public const SUPERVISOR_PENDING = 'Need Supervisor Approval';
     public const SUPERVISOR_REJECTED = 'Rejected by Supervisor';
     public const MANAGER_PENDING = 'Need Manager Approval';
