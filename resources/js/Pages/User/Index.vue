@@ -75,7 +75,7 @@ const deleteUser = (user) => {
                                         </button>
                                         <button
                                             @click="deleteUser(user)"
-                                            class="btn btn-danger hover-background btn-sm m-1"
+                                            class="btn btn-danger text-white hover-background btn-sm m-1"
                                         >
                                             Delete
                                         </button>
