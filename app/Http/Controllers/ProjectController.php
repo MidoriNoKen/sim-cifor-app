@@ -11,7 +11,7 @@ use Inertia\Inertia;
 
 class ProjectController extends Controller
 {
-    private $projectService, $loggedRole;
+    private $projectService, $userService, $loggedRole;
 
     public function __construct(ProjectService $projectService, UserService $userService)
     {
@@ -22,13 +22,13 @@ class ProjectController extends Controller
     public function index()
     {
         $loggedRole = $this->loggedRole;
-        $projects = $this->projectService->getAll();
+        $projects = $this->projectService->getAllWithPM();
         return Inertia::render('Project/Index')->with(['loggedRole' => $loggedRole, 'projects' => $projects]);
     }
 
     public function create()
     {
-        $pms = $this->projectService->getProjectManager();
+        $pms = $this->userService->getProjectManager();
         return Inertia::render('Project/Create')->with('pms', $pms);
     }
 
@@ -48,7 +48,7 @@ class ProjectController extends Controller
     public function edit($id)
     {
         $project = $this->projectService->getByIdWithPM($id);
-        $pms = $this->projectService->getProjectManager();
+        $pms = $this->userService->getProjectManager();
         $statuses = ProjectStatusEnum::STATUSES;
         return Inertia::render('Project/Edit', ['project' => $project, 'pms' => $pms, 'statuses' => $statuses]);
     }

@@ -27,7 +27,8 @@ class TaskController extends Controller
     {
         $loggedRole = $this->loggedRole;
         $tasks = $this->taskService->getAll();
-        return Inertia::render('Task/Index')->with(['loggedRole' => $loggedRole, 'tasks' => $tasks]);
+        $assigned = $this->userService->getUserById($tasks->value('assigned_user'))->name;
+        return Inertia::render('Task/Index')->with(['loggedRole' => $loggedRole, 'tasks' => $tasks, 'assigned' => $assigned]);
     }
 
     public function create()

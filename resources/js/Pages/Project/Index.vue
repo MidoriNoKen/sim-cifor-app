@@ -54,7 +54,7 @@ const createProject = () => {
                                     :key="project.id"
                                 >
                                     <td>{{ project.name }}</td>
-                                    <td>{{ project.pm_id }}</td>
+                                    <td>{{ project.pm }}</td>
                                     <td>{{ project.start_date }}</td>
                                     <td>{{ project.end_date }}</td>
                                     <td>{{ project.description }}</td>

@@ -2,12 +2,8 @@
 
 namespace App\Http\Services;
 
-use App\Enums\PositionEnum;
 use App\Enums\ProjectStatusEnum;
-use App\Enums\RoleEnum;
 use App\Models\Project;
-use App\Models\Role;
-use App\Models\User;
 use Exception;
 
 class ProjectService
@@ -16,17 +12,18 @@ class ProjectService
         return Project::all();
     }
 
+    public function getAllWithPM() {
+        $projects = Project::all();
+        foreach ($projects as $project) {
+            $project->pm = $project->projectManager->name;
+        }
+        return $projects;
+    }
+
     public function getByIdWithPM($id) {
         $project = Project::find($id);
         $project->pm = $project->projectManager->name;
         return $project;
-    }
-
-    public function getProjectManager() {
-        $admin = Role::where('name', RoleEnum::ADMIN)->value('id');
-        return User::whereNotIn('role_id', [$admin])
-            ->whereNotIn('position', [PositionEnum::JUNIOR])
-            ->get();
     }
 
     public function show($id) {

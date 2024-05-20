@@ -3,6 +3,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, router, usePage } from "@inertiajs/vue3";
 
 const tasks = usePage().props.tasks;
+const assigned = usePage().props.assigned;
 
 const showTask = (task) => {
     router.get(`/tasks/${task.id}`, task);
@@ -52,7 +53,7 @@ const createTask = () => {
                             <tbody>
                                 <tr v-for="task in tasks" :key="task.id">
                                     <td>{{ task.name }}</td>
-                                    <td>{{ task.assigned_user }}</td>
+                                    <td>{{ assigned }}</td>
                                     <td>{{ task.start_date }}</td>
                                     <td>{{ task.end_date }}</td>
                                     <td>{{ task.priority }}</td>

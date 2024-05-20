@@ -1,10 +1,10 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { Head, router, usePage } from "@inertiajs/vue3";
+import { Head, usePage } from "@inertiajs/vue3";
 
 const project = usePage().props.project;
 const pm = usePage().props.pm;
-const loggedRole = usePage().props.loggedRole;
+const loggedRole = usePage().props.auth.role;
 </script>
 
 <template>
@@ -49,14 +49,14 @@ const loggedRole = usePage().props.loggedRole;
                         <div class="col-4">Supervisor</div>
                         <div class="col-4">:</div>
                         <div class="col-4">
-                            {{ pm.supervisor }}
+                            {{ pm.supervisor ? pm.supervisor : "-" }}
                         </div>
                     </div>
                     <div class="row m-4">
                         <div class="col-4">Manager</div>
                         <div class="col-4">:</div>
                         <div class="col-4">
-                            {{ pm.manager }}
+                            {{ pm.manager ? pm.manager : "-" }}
                         </div>
                     </div>
                     <div class="row m-4">
