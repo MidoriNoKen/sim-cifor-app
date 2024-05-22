@@ -39,8 +39,6 @@ const createLeaveApplication = () => {
                                     <th>Start Date</th>
                                     <th>End Date</th>
                                     <th>Accumulation</th>
-                                    <th>Supervisor</th>
-                                    <th>Manager</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -63,21 +61,6 @@ const createLeaveApplication = () => {
                                     <td>{{ leaveApplication.end_date }}</td>
                                     <td>
                                         {{ leaveApplication.accumulation }}
-                                    </td>
-                                    <td>
-                                        {{
-                                            leaveApplication.supervisor
-                                                ? leaveApplication.supervisor
-                                                      .name
-                                                : ""
-                                        }}
-                                    </td>
-                                    <td>
-                                        {{
-                                            leaveApplication.manager
-                                                ? leaveApplication.manager.name
-                                                : ""
-                                        }}
                                     </td>
                                     <td>
                                         <IndexButton

@@ -39,8 +39,6 @@ const createTravelAuthorisation = () => {
                                     <th>Start Date</th>
                                     <th>End Date</th>
                                     <th>Accumulation</th>
-                                    <th>Supervisor</th>
-                                    <th>Manager</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -67,22 +65,6 @@ const createTravelAuthorisation = () => {
                                     <td>{{ travelAuthorisation.end_date }}</td>
                                     <td>
                                         {{ travelAuthorisation.accumulation }}
-                                    </td>
-                                    <td>
-                                        {{
-                                            travelAuthorisation.supervisor
-                                                ? travelAuthorisation.supervisor
-                                                      .name
-                                                : ""
-                                        }}
-                                    </td>
-                                    <td>
-                                        {{
-                                            travelAuthorisation.manager
-                                                ? travelAuthorisation.manager
-                                                      .name
-                                                : ""
-                                        }}
                                     </td>
                                     <td>
                                         <IndexButton

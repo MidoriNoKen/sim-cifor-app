@@ -2,7 +2,7 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, usePage } from "@inertiajs/vue3";
 
-const { travelAuthorisation, user } = usePage().props;
+const { travelAuthorisation, user, finance } = usePage().props;
 const loggedRole = usePage().props.auth.role;
 </script>
 
@@ -56,6 +56,13 @@ const loggedRole = usePage().props.auth.role;
                         <div class="col-4">:</div>
                         <div class="col-4">
                             {{ user.manager }}
+                        </div>
+                    </div>
+                    <div class="row m-4">
+                        <div class="col-4">Finance</div>
+                        <div class="col-4">:</div>
+                        <div class="col-4">
+                            {{ finance ? finance.name : "-" }}
                         </div>
                     </div>
                     <div class="row m-4">

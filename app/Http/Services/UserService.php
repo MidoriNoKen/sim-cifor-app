@@ -10,7 +10,7 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Password;
+use Illuminate\Validation\Rules\Password;
 
 class UserService
 {
@@ -27,11 +27,15 @@ class UserService
     public function getUserByIdWithRelations($id)
     {
         $user = User::find($id);
-        $supervisor = User::find($user->supervisor_id);
-        $manager = User::find($user->manager_id);
-        $user->supervisor = $supervisor ? $supervisor->name : null;
-        $user->manager = $manager ? $manager->name : null;
+
+        if ($user->supervisor_id != null)
+            $user->supervisor = User::find($user->supervisor_id)->name;
+
+        if ($user->manager_id != null)
+            $user->manager = User::find($user->manager_id)->name;
+
         $user->born_date = Carbon::parse($user->born_date)->format('d F Y');
+
         return $user;
     }
 
@@ -106,44 +110,38 @@ class UserService
     }
 
     public function getFinances() {
-        $finances = User::where('position', PositionEnum::FINANCE)
-            ->where('id', '!=', Auth::id())
-            ->get();
-
-        return $finances;
+        return User::where('position', PositionEnum::FINANCE)->get();
     }
 
     public function store($request) {
-        try {
-            $request->validate([
-                'name' => 'required|string|max:255',
-                'email' => 'required|string|lowercase|email|max:255|unique:' . User::class,
-                'password' => ['required', 'confirmed', Password::defaults()],
-                'password_confirmation' => 'required|string',
-                'role_id' => 'required|string',
-                'position_id' => 'required|string',
-                'supervisor_id' => 'nullable|string',
-                'manager_id' => 'nullable|string',
-                'born_date' => 'required|date',
-            ]);
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|lowercase|email|max:255|unique:' . User::class,
+            'password' => ['required', 'confirmed', Password::defaults()],
+            'role_id' => 'required',
+            'position' => 'required|string',
+            'supervisor_id' => 'nullable',
+            'manager_id' => 'nullable',
+            'born_date' => 'required|date',
+        ]);
 
-            $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => Hash::make($request->password),
-                'password_confirmation' => $request->password_confirmation,
-                'role_id' => $request->role_id,
-                'position' => $request->position_id,
-                'supervisor_id' => $request->supervisor_id,
-                'manager_id' => $request->manager_id,
-                'born_date' => $request->born_date
-            ]);
+        if (!$validatedData) {
+            return redirect()->back()->withErrors($validatedData)->withInput();
+        }
 
-            if (!$user) {
-                Throw new Exception("An error occurred while storing the leave application.");
-            }
-        } catch (Exception $e) {
-            Throw new Exception("An error occurred while storing the user.");
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role_id' => $request->role_id,
+            'position' => $request->position,
+            'supervisor_id' => $request->supervisor_id,
+            'manager_id' => $request->manager_id,
+            'born_date' => $request->born_date
+        ]);
+
+        if (!$user) {
+            Throw new Exception("An error occurred while storing the leave application.");
         }
     }
 }

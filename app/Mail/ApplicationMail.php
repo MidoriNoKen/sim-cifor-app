@@ -8,14 +8,14 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class LeaveApplicationMail extends Mailable
+class ApplicationMail extends Mailable
 {
     use Queueable, SerializesModels;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(private $sender, private $receiver, private $status, private $statuses)
+    public function __construct(private $sender, private $receiver, private $status, private $statuses, private $type)
     {
         //
     }
@@ -26,7 +26,7 @@ class LeaveApplicationMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Leave Application - ' . $this->status,
+            subject: $this->type . ' - ' . $this->status,
         );
     }
 
@@ -36,8 +36,8 @@ class LeaveApplicationMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'Mail.LeaveApplication',
-            with: ['sender' => $this->sender, 'receiver' => $this->receiver, 'status' => $this->status, 'statuses' => $this->statuses],
+            view: 'Mail.ApplicationFormat',
+            with: ['sender' => $this->sender, 'receiver' => $this->receiver, 'status' => $this->status, 'statuses' => $this->statuses, 'type' => $this->type],
         );
     }
 

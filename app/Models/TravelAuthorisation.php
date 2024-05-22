@@ -43,7 +43,7 @@ class TravelAuthorisation extends Model
         return $this->belongsTo(User::class, 'manager_id');
     }
 
-    public function financeManager()
+    public function finance()
     {
         return $this->belongsTo(User::class, 'finance_id');
     }

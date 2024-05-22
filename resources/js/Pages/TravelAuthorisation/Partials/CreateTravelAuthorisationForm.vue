@@ -1,11 +1,13 @@
 <script setup>
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
+import OptionFinanceList from "@/Components/Options/OptionFinanceList.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import { usePage, useForm } from "@inertiajs/vue3";
 import { CDateRangePicker } from "@coreui/vue-pro";
 
 const loggedRole = usePage().props.loggedRole;
+const finances = usePage().props.finances;
 
 const form = useForm({
     start_date: null,
@@ -13,6 +15,7 @@ const form = useForm({
     transport_type: null,
     accomodation_detail: null,
     travel_reasons: null,
+    finance_id: null,
 });
 </script>
 
@@ -90,6 +93,7 @@ const form = useForm({
             ></textarea>
             <InputError class="mt-2" :message="form.errors.travel_reasons" />
         </div>
+        <OptionFinanceList :form="form" :finances="finances" />
         <div class="flex items-center gap-4">
             <PrimaryButton :disabled="form.processing">Save</PrimaryButton>
 

@@ -17,7 +17,7 @@ const props = defineProps(["form", "supervisors"]);
             <option value="null" disabled>Select Supervisor</option>
             <option
                 v-for="supervisor in supervisors"
-                :value="supervisor.name"
+                :value="supervisor.id"
                 :key="supervisor.id"
             >
                 {{ supervisor.name }}

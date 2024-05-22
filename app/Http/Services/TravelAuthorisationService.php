@@ -30,7 +30,7 @@ class TravelAuthorisationService
         $position = $user->position;
         $userId = $user->id;
 
-        $query = TravelAuthorisation::query()->with(["applicant", "supervisor", "manager"]);
+        $query = TravelAuthorisation::query()->with(["applicant", "supervisor", "manager", "finance"]);
 
         if ($roleName === RoleEnum::STAFF && $position === PositionEnum::SENIOR)
         $query->where("applicant_id", $userId)->orWhere("supervisor_id", $userId);
@@ -52,6 +52,7 @@ class TravelAuthorisationService
                 'end_date' => 'required|string|date|after_or_equal:start_date',
                 'accomodation_detail' => 'required|string',
                 'travel_reasons' => 'required|string',
+                'finance_id' => 'required'
             ]);
 
             if (!$validation) {
@@ -68,7 +69,7 @@ class TravelAuthorisationService
                 'supervisor_reject_reasons' => null,
                 'manager_id' => auth()->user()->manager_id,
                 'manager_reject_reasons' => null,
-                'finance_id' => null,
+                'finance_id' => $request->finance_id,
                 'finance_reject_reasons' => null,
                 'unit_id' => 1,
                 'transport_type' => $request->transport_type,

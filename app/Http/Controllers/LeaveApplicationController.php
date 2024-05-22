@@ -58,8 +58,8 @@ class LeaveApplicationController extends Controller
         if ($result != null) {
             $applicant = $this->userService->getUserByIdWithRelations($result->applicant_id);
             $supervisor = $this->userService->getUserById($applicant->supervisor_id);
-            $this->notificationService->sendMail($supervisor, $applicant, ApprovalStatusEnum::NEW);
-            $this->notificationService->sendMail($applicant, $supervisor, ApprovalStatusEnum::SUPERVISOR_PENDING);
+            $this->notificationService->sendMail($supervisor, $applicant, ApprovalStatusEnum::NEW, 'Leave Application');
+            $this->notificationService->sendMail($applicant, $supervisor, ApprovalStatusEnum::SUPERVISOR_PENDING, 'Leave Application');
         }
         return redirect()->route('leaveApplications.index');
     }
@@ -68,19 +68,20 @@ class LeaveApplicationController extends Controller
     {
         $leaveApplication = $this->leaveApplicationService->getById($id);
         $applicant = $this->userService->getUserByIdWithRelations($leaveApplication->applicant_id);
-        $supervisor = $this->userService->getUserById($applicant->supervisor_id);
-        $manager = $this->userService->getUserById($applicant->manager_id);
+        $supervisor = $this->userService->getUserById($leaveApplication->supervisor_id);
+        $manager = $this->userService->getUserById($leaveApplication->manager_id);
 
         if ($this->loggedPosition === PositionEnum::SENIOR){
             $this->approvalService->approval($leaveApplication, $leaveApplication->supervisor_id, RoleEnum::STAFF, PositionEnum::SENIOR, ApprovalStatusEnum::SUPERVISOR_PENDING, ApprovalStatusEnum::MANAGER_PENDING);
-            $this->notificationService->sendMail($supervisor, $applicant, ApprovalStatusEnum::MANAGER_PENDING);
-            $this->notificationService->sendMail($applicant, $manager, ApprovalStatusEnum::MANAGER_PENDING);
+            $this->notificationService->sendMail($supervisor, $applicant, ApprovalStatusEnum::MANAGER_PENDING, 'Leave Application');
+            $this->notificationService->sendMail($applicant, $manager, ApprovalStatusEnum::MANAGER_PENDING, 'Leave Application');
+            dd($this->notificationService->sendMail($supervisor, $applicant, ApprovalStatusEnum::MANAGER_PENDING, 'Leave Application'),
+            $this->notificationService->sendMail($applicant, $manager, ApprovalStatusEnum::MANAGER_PENDING, 'Leave Application'));
         }
 
         else if ($this->loggedPosition === PositionEnum::MANAGER) {
-            $this->approvalService->approval($leaveApplication, $leaveApplication->supervisor_id, RoleEnum::MANAGER, PositionEnum::MANAGER, ApprovalStatusEnum::MANAGER_PENDING, ApprovalStatusEnum::APPROVED);
-            $this->notificationService->sendMail($manager, $applicant, ApprovalStatusEnum::APPROVED);
-            $this->notificationService->sendMail($applicant, $manager, ApprovalStatusEnum::APPROVED);
+            $this->approvalService->approval($leaveApplication, $leaveApplication->manager_id, RoleEnum::MANAGER, PositionEnum::MANAGER, ApprovalStatusEnum::MANAGER_PENDING, ApprovalStatusEnum::APPROVED);
+            $this->notificationService->sendMail($manager, $applicant, ApprovalStatusEnum::APPROVED, 'Leave Application');
         }
 
         return Inertia::location(route('leaveApplications.index'));
@@ -93,7 +94,7 @@ class LeaveApplicationController extends Controller
         $this->approvalService->approval($leaveApplication, $leaveApplication->supervisor_id, RoleEnum::STAFF, PositionEnum::SENIOR, ApprovalStatusEnum::MANAGER_PENDING, ApprovalStatusEnum::SUPERVISOR_PENDING);
 
         else if ($this->loggedPosition === PositionEnum::MANAGER)
-        $this->approvalService->approval($leaveApplication, $leaveApplication->supervisor_id, RoleEnum::MANAGER, PositionEnum::MANAGER, ApprovalStatusEnum::APPROVED, ApprovalStatusEnum::MANAGER_PENDING);
+        $this->approvalService->approval($leaveApplication, $leaveApplication->manager_id, RoleEnum::MANAGER, PositionEnum::MANAGER, ApprovalStatusEnum::APPROVED, ApprovalStatusEnum::MANAGER_PENDING);
 
         return Inertia::location(route('leaveApplications.index'));
     }
@@ -109,11 +110,19 @@ class LeaveApplicationController extends Controller
     public function reject(Request $request, $id)
     {
         $leaveApplication = $this->leaveApplicationService->getById($id);
-        if ($this->loggedPosition === PositionEnum::SENIOR)
-        $this->approvalService->rejection($leaveApplication, $leaveApplication->supervisor_id, RoleEnum::STAFF, PositionEnum::SENIOR, ApprovalStatusEnum::SUPERVISOR_PENDING, ApprovalStatusEnum::SUPERVISOR_REJECTED, $request->reasons);
+        $applicant = $this->userService->getUserByIdWithRelations($leaveApplication->applicant_id);
 
-        else if ($this->loggedPosition === PositionEnum::MANAGER)
-        $this->approvalService->rejection($leaveApplication, $leaveApplication->manager_id, RoleEnum::MANAGER, PositionEnum::MANAGER, ApprovalStatusEnum::MANAGER_PENDING, ApprovalStatusEnum::MANAGER_REJECTED, $request->reasons);
+        if ($this->loggedPosition === PositionEnum::SENIOR){
+            $supervisor = $this->userService->getUserById($applicant->supervisor_id);
+            $this->approvalService->rejection($leaveApplication, $leaveApplication->supervisor_id, RoleEnum::STAFF, PositionEnum::SENIOR, ApprovalStatusEnum::SUPERVISOR_PENDING, ApprovalStatusEnum::SUPERVISOR_REJECTED, $request->reasons);
+            $this->notificationService->sendMail($supervisor, $applicant, ApprovalStatusEnum::SUPERVISOR_REJECTED, 'Leave Application');
+        }
+
+        else if ($this->loggedPosition === PositionEnum::MANAGER){
+            $manager = $this->userService->getUserById($applicant->manager_id);
+            $this->approvalService->rejection($leaveApplication, $leaveApplication->manager_id, RoleEnum::MANAGER, PositionEnum::MANAGER, ApprovalStatusEnum::MANAGER_PENDING, ApprovalStatusEnum::MANAGER_REJECTED, $request->reasons);
+            $this->notificationService->sendMail($manager, $applicant, ApprovalStatusEnum::MANAGER_REJECTED, 'Leave Application');
+        }
 
         return Inertia::location(route('leaveApplications.index'));
     }

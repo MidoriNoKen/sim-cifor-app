@@ -50,6 +50,7 @@ class LeaveApplicationService
                 'leave_type' => 'required|string',
                 'start_date' => 'required|string|date|before:end_date',
                 'end_date' => 'required|string|date|after_or_equal:start_date',
+                'finance_id' => 'required'
             ]);
 
             if (!$validation) {
@@ -66,6 +67,8 @@ class LeaveApplicationService
                 'supervisor_reject_reasons' => null,
                 'manager_id' => auth()->user()->manager_id,
                 'manager_reject_reasons' => null,
+                'finance_id' => $request->finance_id,
+                'finance_reject_reasons' => null,
                 'start_date' => $start_date,
                 'end_date' => $end_date,
                 'accumulation' => Util::getDateTimeDifference($request->start_date, $request->end_date),

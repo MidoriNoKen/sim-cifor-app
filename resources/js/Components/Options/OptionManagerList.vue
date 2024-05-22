@@ -17,7 +17,7 @@ const props = defineProps(["form", "managers"]);
             =
             <option
                 v-for="manager in managers"
-                :value="manager.name"
+                :value="manager.id"
                 :key="manager.id"
             >
                 {{ manager.name }}
