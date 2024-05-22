@@ -81,7 +81,7 @@ class TravelAuthorisationController extends Controller
         }
 
         else if ($this->loggedPosition === PositionEnum::FINANCE) {
-            $this->approvalService->approval($travelAuthorisation, $travelAuthorisation->finance_id, RoleEnum::MANAGER, PositionEnum::MANAGER, ApprovalStatusEnum::FINANCE_PENDING, ApprovalStatusEnum::APPROVED);
+            $this->approvalService->approval($travelAuthorisation, $travelAuthorisation->finance_id, RoleEnum::STAFF, PositionEnum::FINANCE, ApprovalStatusEnum::FINANCE_PENDING, ApprovalStatusEnum::APPROVED);
             $this->notificationService->sendMail($finance, $applicant, ApprovalStatusEnum::APPROVED, 'Travel Authorisation');
         }
 
@@ -98,7 +98,7 @@ class TravelAuthorisationController extends Controller
         $this->approvalService->approval($travelAuthorisation, $travelAuthorisation->manager_id, RoleEnum::MANAGER, PositionEnum::MANAGER, ApprovalStatusEnum::FINANCE_PENDING, ApprovalStatusEnum::MANAGER_PENDING);
 
         else if ($this->loggedPosition === PositionEnum::FINANCE)
-        $this->approvalService->approval($travelAuthorisation, $travelAuthorisation->finance_id, RoleEnum::MANAGER, PositionEnum::FINANCE, ApprovalStatusEnum::APPROVED, ApprovalStatusEnum::FINANCE_PENDING);
+        $this->approvalService->approval($travelAuthorisation, $travelAuthorisation->finance_id, RoleEnum::STAFF, PositionEnum::FINANCE, ApprovalStatusEnum::APPROVED, ApprovalStatusEnum::FINANCE_PENDING);
 
         return Inertia::location(route('travelAuthorisations.index'));
     }
@@ -130,7 +130,7 @@ class TravelAuthorisationController extends Controller
 
         else if ($this->loggedPosition === PositionEnum::FINANCE) {
             $finance = $this->userService->getUserById($travelAuthorisation->finance_id);
-            $this->approvalService->rejection($travelAuthorisation, $travelAuthorisation->finance_id, RoleEnum::MANAGER, PositionEnum::FINANCE, ApprovalStatusEnum::FINANCE_PENDING, ApprovalStatusEnum::FINANCE_REJECTED, $request->reasons);
+            $this->approvalService->rejection($travelAuthorisation, $travelAuthorisation->finance_id, RoleEnum::STAFF, PositionEnum::FINANCE, ApprovalStatusEnum::FINANCE_PENDING, ApprovalStatusEnum::FINANCE_REJECTED, $request->reasons);
             $this->notificationService->sendMail($finance, $applicant, ApprovalStatusEnum::FINANCE_REJECTED, 'Travel Authorisation');
         }
 
@@ -147,7 +147,7 @@ class TravelAuthorisationController extends Controller
         $this->approvalService->rejection($travelAuthorisation, $travelAuthorisation->manager_id, RoleEnum::MANAGER, PositionEnum::MANAGER, ApprovalStatusEnum::MANAGER_REJECTED, ApprovalStatusEnum::MANAGER_PENDING, null);
 
         else if ($this->loggedPosition === PositionEnum::FINANCE)
-        $this->approvalService->rejection($travelAuthorisation, $travelAuthorisation->manager_id, RoleEnum::MANAGER, PositionEnum::FINANCE, ApprovalStatusEnum::FINANCE_REJECTED, ApprovalStatusEnum::FINANCE_PENDING, null);
+        $this->approvalService->rejection($travelAuthorisation, $travelAuthorisation->finance_id, RoleEnum::STAFF, PositionEnum::FINANCE, ApprovalStatusEnum::FINANCE_REJECTED, ApprovalStatusEnum::FINANCE_PENDING, null);
 
         return Inertia::location(route('travelAuthorisations.index'));
     }

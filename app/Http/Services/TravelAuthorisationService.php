@@ -38,6 +38,9 @@ class TravelAuthorisationService
         else if ($roleName === RoleEnum::MANAGER && $position === PositionEnum::MANAGER)
         $query->where("applicant_id", $userId)->orWhere("manager_id", $userId);
 
+        else if ($roleName === RoleEnum::STAFF && $position === PositionEnum::FINANCE)
+        $query->where("finance_id", $userId)->orWhere("finance_id", $userId);
+
         $query->orderBy('start_date', 'desc');
 
         return $query->get();

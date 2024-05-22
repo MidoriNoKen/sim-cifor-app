@@ -31,7 +31,7 @@ class ApprovalService
         $data->isSupervisor = $loggedId == $data->supervisor_id ? true : false;
         $data->isManager = $loggedId == $data->manager_id ? true : false;
         if ($this->loggedPosition == PositionEnum::FINANCE)
-            $data->isFinance = $loggedId == $data->finance_id ? true : false;
+            $data->isFinance = true;
     }
 
     public function checkAccess($userId, $role, $position)
