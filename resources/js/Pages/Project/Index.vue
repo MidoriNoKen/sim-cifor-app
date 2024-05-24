@@ -2,7 +2,8 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, router, usePage } from "@inertiajs/vue3";
 
-const projects = usePage().props.projects;
+const { projects, loggedPosition } = usePage().props;
+const { role, position } = usePage().props.auth.user;
 
 const showProject = (project) => {
     router.get(`/projects/${project.id}`, project);
@@ -71,12 +72,20 @@ const createProject = () => {
                                             @click="editProject(project)"
                                             class="btn btn-warning hover-background btn-sm m-1"
                                             style="color: white"
+                                            v-if="
+                                                position !== 'Junior' ||
+                                                role.name !== 'Staff'
+                                            "
                                         >
                                             Edit
                                         </button>
                                         <button
                                             @click="deleteProject(project)"
                                             class="btn btn-danger text-white hover-background btn-sm m-1"
+                                            v-if="
+                                                position !== 'Junior' ||
+                                                role.name !== 'Staff'
+                                            "
                                         >
                                             Delete
                                         </button>

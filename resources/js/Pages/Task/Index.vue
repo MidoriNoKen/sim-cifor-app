@@ -2,8 +2,8 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, router, usePage } from "@inertiajs/vue3";
 
-const tasks = usePage().props.tasks;
-const assigned = usePage().props.assigned;
+const { tasks, assigned } = usePage().props;
+const { role, position } = usePage().props.auth.user;
 
 const showTask = (task) => {
     router.get(`/tasks/${task.id}`, task);
@@ -71,12 +71,20 @@ const createTask = () => {
                                             @click="editTask(task)"
                                             class="btn btn-warning hover-background btn-sm m-1"
                                             style="color: white"
+                                            v-if="
+                                                position !== 'Junior' ||
+                                                role.name !== 'Staff'
+                                            "
                                         >
                                             Edit
                                         </button>
                                         <button
                                             @click="deleteTask(task)"
                                             class="btn btn-danger text-white hover-background btn-sm m-1"
+                                            v-if="
+                                                position !== 'Junior' ||
+                                                role.name !== 'Staff'
+                                            "
                                         >
                                             Delete
                                         </button>

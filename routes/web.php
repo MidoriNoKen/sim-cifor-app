@@ -8,9 +8,7 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TravelAuthorisationController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\RoleCheck;
-use App\Mail\LeaveApplicationMail;
 use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -75,11 +73,6 @@ Route::middleware('auth')->group(function () {
     Route::group(['middleware' => RoleCheck::class . ':' . RoleEnum::ADMIN], function () {
         Route::resource('/users', UserController::class);
     });
-});
-
-Route::get('/test', function() {
-    Mail::to('midor1nok3n@gmail.com')->send(new LeaveApplicationMail('Taufik', 'midor1nok3n@gmail.com', 'oke'));
-    return 'Mail sent';
 });
 
 require __DIR__ . '/auth.php';

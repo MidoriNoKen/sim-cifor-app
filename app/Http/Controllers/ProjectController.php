@@ -11,19 +11,19 @@ use Inertia\Inertia;
 
 class ProjectController extends Controller
 {
-    private $projectService, $userService, $loggedRole;
+    private $projectService, $userService;
 
     public function __construct(ProjectService $projectService, UserService $userService)
     {
         $this->projectService = $projectService;
-        $this->loggedRole = $userService->getLoggedRole();
+        $this->userService = $userService;
     }
 
     public function index()
     {
-        $loggedRole = $this->loggedRole;
+        $loggedPosition = $this->userService->getLoggedPosition();
         $projects = $this->projectService->getAllWithPM();
-        return Inertia::render('Project/Index')->with(['loggedRole' => $loggedRole, 'projects' => $projects]);
+        return Inertia::render('Project/Index')->with(['loggedPosition' => $loggedPosition, 'projects' => $projects]);
     }
 
     public function create()
