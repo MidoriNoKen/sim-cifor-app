@@ -6,6 +6,21 @@ use DateTime;
 
 class Util
 {
+    private static $months = [
+        1 => 'Januari',
+        2 => 'Februari',
+        3 => 'Maret',
+        4 => 'April',
+        5 => 'Mei',
+        6 => 'Juni',
+        7 => 'Juli',
+        8 => 'Agustus',
+        9 => 'September',
+        10 => 'Oktober',
+        11 => 'November',
+        12 => 'Desember'
+    ];
+
     public static function formatDate($date)
     {
         return (new DateTime($date))->format('d M Y H:i');
@@ -16,11 +31,32 @@ class Util
         return (new DateTime($date))->format('d M Y');
     }
 
+    public static function formatDateToIndonesian($date)
+    {
+
+        $dateTime = new DateTime($date);
+        $day = $dateTime->format('d');
+        $month = self::$months[(int)$dateTime->format('m')];
+        $year = $dateTime->format('Y');
+
+        return "{$day} {$month} {$year}";
+    }
+
     public static function getDateTimeDifference($start, $end)
     {
-        if (Util::defaultDate($start) === (Util::defaultDate($end)))
-            return (date_diff(date_create($start), date_create($end))->format('%h') . ' Jam');
+        $startDateTime = date_create($start);
+        $endDateTime = date_create($end);
 
-        return (date_diff(date_create($start), date_create($end))->format('%a') + 1) . ' Hari';
+        $startDate = $startDateTime->format('Y-m-d');
+        $endDate = $endDateTime->format('Y-m-d');
+
+        $startTime = $startDateTime->format('H:i');
+        $endTime = $endDateTime->format('H:i');
+
+        if ($startDate === $endDate) {
+            if ($startTime === $endTime) return '1 Hari';
+            return date_diff($startDateTime, $endDateTime)->format('%h Jam %i Menit');
+        }
+        return (date_diff($startDateTime, $endDateTime)->format('%a') + 1) . ' Hari';
     }
 }

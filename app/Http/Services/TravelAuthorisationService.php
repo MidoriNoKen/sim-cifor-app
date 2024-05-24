@@ -7,15 +7,17 @@ use App\Enums\PositionEnum;
 use App\Enums\RoleEnum;
 use App\Models\TravelAuthorisation;
 use App\Utils\Util;
+use Carbon\Carbon;
 use Exception;
 
 class TravelAuthorisationService
 {
-    private $user;
+    private $user, $holidayService;
 
-    public function __construct(UserService $userService)
+    public function __construct(UserService $userService, HolidayService $holidayService)
     {
         $this->user = $userService->getLoggedUser();
+        $this->holidayService = $holidayService;
     }
 
     public function getById($id)
@@ -62,29 +64,65 @@ class TravelAuthorisationService
                 Throw new Exception("Invalid input data.");
             }
 
-            $start_date = date('Y-m-d H:i:s', strtotime($request->start_date));
-            $end_date = date('Y-m-d H:i:s', strtotime($request->end_date));
+            $start_date = Carbon::parse($request->start_date)->timezone('Asia/Jakarta');
+            $end_date = Carbon::parse($request->end_date)->timezone('Asia/Jakarta');
 
-            $travelAuthorisation = TravelAuthorisation::create([
-                'applicant_id' => auth()->id(),
-                'status' => ApprovalStatusEnum::SUPERVISOR_PENDING,
-                'supervisor_id' => auth()->user()->supervisor_id,
-                'supervisor_reject_reasons' => null,
-                'manager_id' => auth()->user()->manager_id,
-                'manager_reject_reasons' => null,
-                'finance_id' => $request->finance_id,
-                'finance_reject_reasons' => null,
-                'unit_id' => 1,
-                'transport_type' => $request->transport_type,
-                'start_date' => $start_date,
-                'end_date' => $end_date,
-                'accumulation' => Util::getDateTimeDifference($request->start_date, $request->end_date),
-                'accomodation_detail' => $request->accomodation_detail,
-                'travel_reasons' => $request->travel_reasons,
-            ]);
+            if ($start_date->equalTo($end_date)) {
+                if ($this->holidayService->isHoliday($start_date)) {
+                    throw new Exception("Tanggal " . Util::formatDateToIndonesian($start_date) . " adalah hari Libur Nasional.");
+                }
+            }
 
-            if (!$travelAuthorisation) {
-                Throw new Exception("An error occurred while storing the leave application.");
+            $holidays = $this->holidayService->getHolidaysInRange($start_date, $end_date);
+
+            if (!$holidays->isEmpty()) {
+                $dateRanges = $this->holidayService->splitDateRange($start_date, $end_date, $holidays);
+
+                foreach ($dateRanges as $range) {
+                    $travelAuthorisation = TravelAuthorisation::create([
+                        'applicant_id' => auth()->id(),
+                        'status' => ApprovalStatusEnum::SUPERVISOR_PENDING,
+                        'supervisor_id' => auth()->user()->supervisor_id,
+                        'supervisor_reject_reasons' => null,
+                        'manager_id' => auth()->user()->manager_id,
+                        'manager_reject_reasons' => null,
+                        'finance_id' => $request->finance_id,
+                        'finance_reject_reasons' => null,
+                        'unit_id' => 1,
+                        'transport_type' => $request->transport_type,
+                        'start_date' => $range['start_date']->toDateTimeString(),
+                        'end_date' => $range['end_date']->toDateTimeString(),
+                        'accumulation' => Util::getDateTimeDifference($range['start_date'], $range['end_date']),
+                        'accomodation_detail' => $request->accomodation_detail,
+                        'travel_reasons' => $request->travel_reasons,
+                    ]);
+
+                    if (!$travelAuthorisation) {
+                        throw new Exception("An error occurred while storing the leave application.");
+                    }
+                }
+            } else {
+                $travelAuthorisation = TravelAuthorisation::create([
+                    'applicant_id' => auth()->id(),
+                    'status' => ApprovalStatusEnum::SUPERVISOR_PENDING,
+                    'supervisor_id' => auth()->user()->supervisor_id,
+                    'supervisor_reject_reasons' => null,
+                    'manager_id' => auth()->user()->manager_id,
+                    'manager_reject_reasons' => null,
+                    'finance_id' => $request->finance_id,
+                    'finance_reject_reasons' => null,
+                    'unit_id' => 1,
+                    'transport_type' => $request->transport_type,
+                    'start_date' => $start_date,
+                    'end_date' => $end_date,
+                    'accumulation' => Util::getDateTimeDifference($request->start_date, $request->end_date),
+                    'accomodation_detail' => $request->accomodation_detail,
+                    'travel_reasons' => $request->travel_reasons,
+                ]);
+
+                if (!$travelAuthorisation) {
+                    throw new Exception("An error occurred while storing the leave application.");
+                }
             }
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
