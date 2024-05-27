@@ -122,10 +122,10 @@ const loggedRole = usePage().props.auth.role;
                         </div>
                     </div>
                     <div class="row m-4">
-                        <div class="col-4">Accomodation Detail</div>
+                        <div class="col-4">Accommodation Detail</div>
                         <div class="col-4">:</div>
                         <div class="col-4">
-                            {{ travelAuthorisation.accomodation_detail }}
+                            {{ travelAuthorisation.accommodation_detail }}
                         </div>
                     </div>
                     <div class="row m-4">

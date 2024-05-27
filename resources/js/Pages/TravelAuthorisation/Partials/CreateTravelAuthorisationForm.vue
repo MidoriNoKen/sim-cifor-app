@@ -1,19 +1,20 @@
 <script setup>
+import { usePage, useForm } from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import OptionFinanceList from "@/Components/Options/OptionFinanceList.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
-import { usePage, useForm } from "@inertiajs/vue3";
 import { CDateRangePicker } from "@coreui/vue-pro";
+import CreateAccommodationDetailForm from "./CreateAccommodationDetailForm.vue";
 
-const loggedRole = usePage().props.loggedRole;
-const finances = usePage().props.finances;
+const { props } = usePage();
+const finances = props.finances;
 
 const form = useForm({
     start_date: null,
     end_date: null,
     transport_type: null,
-    accomodation_detail: null,
+    accommodation_details: [],
     travel_reasons: null,
     finance_id: null,
 });
@@ -24,7 +25,6 @@ const form = useForm({
         <h2 class="text-lg font-medium text-gray-900">
             Travel Authorisation Information
         </h2>
-
         <p class="mt-1 text-sm text-gray-600">
             Create new travel authorisation.
         </p>
@@ -36,7 +36,6 @@ const form = useForm({
     >
         <div class="mt-4">
             <InputLabel for="transport_type" value="Transport Type" />
-
             <select
                 class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                 id="transport_type"
@@ -48,12 +47,11 @@ const form = useForm({
                 <option value="Train">Train</option>
                 <option value="Car">Car</option>
             </select>
-
             <InputError class="mt-2" :message="form.errors.transport_type" />
         </div>
+
         <div class="mt-4">
             <InputLabel for="dateRange" value="Date" />
-
             <CDateRangePicker
                 id="dateRange"
                 name="dateRange"
@@ -65,26 +63,14 @@ const form = useForm({
             />
             <InputError class="mt-2" :message="form.errors.date" />
         </div>
-        <div class="mt-4">
-            <InputLabel
-                for="accomodation_detail"
-                value="Accommodation Detail"
-            />
 
-            <textarea
-                id="accomodation_detail"
-                class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                v-model="form.accomodation_detail"
-                required
-            ></textarea>
-            <InputError
-                class="mt-2"
-                :message="form.errors.accomodation_detail"
-            />
-        </div>
+        <CreateAccommodationDetailForm
+            :form="form"
+            v-model="form.accommodation_details"
+        />
+
         <div class="mt-4">
             <InputLabel for="travel_reasons" value="Travel Reasons" />
-
             <textarea
                 id="travel_reasons"
                 class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
@@ -93,10 +79,11 @@ const form = useForm({
             ></textarea>
             <InputError class="mt-2" :message="form.errors.travel_reasons" />
         </div>
+
         <OptionFinanceList :form="form" :finances="finances" />
+
         <div class="flex items-center gap-4">
             <PrimaryButton :disabled="form.processing">Save</PrimaryButton>
-
             <Transition
                 enter-active-class="transition ease-in-out"
                 enter-from-class="opacity-0"

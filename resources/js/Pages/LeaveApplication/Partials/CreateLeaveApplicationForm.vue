@@ -5,8 +5,6 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import { usePage, useForm } from "@inertiajs/vue3";
 import { CDateRangePicker } from "@coreui/vue-pro";
 
-const loggedRole = usePage().props.loggedRole;
-
 const form = useForm({
     start_date: null,
     end_date: null,

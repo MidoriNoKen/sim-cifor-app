@@ -24,7 +24,6 @@ class TravelAuthorisation extends Model
         'start_date',
         'end_date',
         'accumulation',
-        'accomodation_detail',
         'travel_reasons',
     ];
 
@@ -51,5 +50,10 @@ class TravelAuthorisation extends Model
     public function unit()
     {
         return $this->belongsTo(Unit::class);
+    }
+
+    public function AccommodationDetails()
+    {
+        return $this->hasMany(AccommodationDetail::class);
     }
 }

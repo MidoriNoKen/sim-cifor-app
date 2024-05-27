@@ -23,7 +23,7 @@ class CreateTravelAuthorisationsTable extends Migration
             $table->datetime('start_date');
             $table->datetime('end_date');
             $table->integer('accumulation');
-            $table->text('accomodation_detail')->nullable();
+            $table->text('accommodation_detail')->nullable();
             $table->text('travel_reasons')->nullable();
             $table->timestamps();
         });

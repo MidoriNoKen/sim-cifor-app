@@ -9,7 +9,7 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { useForm, usePage } from "@inertiajs/vue3";
 
-const { loggedRole, supervisors, managers, roles, positions } = usePage().props;
+const { supervisors, managers, roles, positions } = usePage().props;
 const form = useForm({
     name: "",
     email: "",

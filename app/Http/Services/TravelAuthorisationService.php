@@ -53,32 +53,40 @@ class TravelAuthorisationService
         try {
             $validation = $request->validate([
                 'transport_type' => 'required|string',
-                'start_date' => 'required|string|date|before:end_date',
-                'end_date' => 'required|string|date|after_or_equal:start_date',
-                'accomodation_detail' => 'required|string',
+                'start_date' => 'required|date|before:end_date',
+                'end_date' => 'required|date|after_or_equal:start_date',
+                'accommodation_details' => 'required|array',
+                'accommodation_details.*.name' => 'required|string',
+                'accommodation_details.*.quantity' => 'required|integer',
+                'accommodation_details.*.price' => 'required|numeric',
+                'accommodation_details.*.description' => 'nullable|string',
                 'travel_reasons' => 'required|string',
                 'finance_id' => 'required'
             ]);
 
+            // Pastikan validasi benar-benar berhasil
             if (!$validation) {
-                Throw new Exception("Invalid input data.");
+                throw new Exception("Invalid input data.");
             }
 
+            // Ubah timezone dari tanggal
             $start_date = Carbon::parse($request->start_date)->timezone('Asia/Jakarta');
             $end_date = Carbon::parse($request->end_date)->timezone('Asia/Jakarta');
 
-            if ($start_date->equalTo($end_date)) {
-                if ($this->holidayService->isHoliday($start_date)) {
-                    throw new Exception("Tanggal " . Util::formatDateToIndonesian($start_date) . " adalah hari Libur Nasional.");
-                }
+            // Periksa apakah tanggal awal dan akhir sama dan apakah tanggal tersebut adalah hari libur
+            if ($start_date->equalTo($end_date) && $this->holidayService->isHoliday($start_date)) {
+                throw new Exception("Tanggal " . Util::formatDateToIndonesian($start_date) . " adalah hari Libur Nasional.");
             }
 
+            // Ambil daftar hari libur di antara tanggal awal dan akhir
             $holidays = $this->holidayService->getHolidaysInRange($start_date, $end_date);
 
             if (!$holidays->isEmpty()) {
+                // Bagi rentang tanggal menjadi rentang yang tidak termasuk hari libur
                 $dateRanges = $this->holidayService->splitDateRange($start_date, $end_date, $holidays);
 
                 foreach ($dateRanges as $range) {
+                    // Buat objek TravelAuthorisation untuk setiap rentang tanggal
                     $travelAuthorisation = TravelAuthorisation::create([
                         'applicant_id' => auth()->id(),
                         'status' => ApprovalStatusEnum::SUPERVISOR_PENDING,
@@ -93,15 +101,27 @@ class TravelAuthorisationService
                         'start_date' => $range['start_date']->toDateTimeString(),
                         'end_date' => $range['end_date']->toDateTimeString(),
                         'accumulation' => Util::getDateTimeDifference($range['start_date'], $range['end_date']),
-                        'accomodation_detail' => $request->accomodation_detail,
                         'travel_reasons' => $request->travel_reasons,
                     ]);
 
+                    // Tambahkan detail akomodasi untuk setiap objek TravelAuthorisation
+                    foreach ($request->accommodation_details as $detail) {
+                        $travelAuthorisation->accommodationDetails()->create([
+                            'name' => $detail['name'],
+                            'quantity' => $detail['quantity'],
+                            'price' => $detail['price'],
+                            'total_price' => $detail['quantity'] * $detail['price'],
+                            'description' => $detail['description']
+                        ]);
+                    }
+
+                    // Lakukan pengecekan kembali jika pembuatan TravelAuthorisation gagal
                     if (!$travelAuthorisation) {
-                        throw new Exception("An error occurred while storing the leave application.");
+                        throw new Exception("An error occurred while storing the travel authorisation.");
                     }
                 }
             } else {
+                // Jika tidak ada hari libur, buat TravelAuthorisation untuk rentang tanggal tersebut
                 $travelAuthorisation = TravelAuthorisation::create([
                     'applicant_id' => auth()->id(),
                     'status' => ApprovalStatusEnum::SUPERVISOR_PENDING,
@@ -115,13 +135,24 @@ class TravelAuthorisationService
                     'transport_type' => $request->transport_type,
                     'start_date' => $start_date,
                     'end_date' => $end_date,
-                    'accumulation' => Util::getDateTimeDifference($request->start_date, $request->end_date),
-                    'accomodation_detail' => $request->accomodation_detail,
+                    'accumulation' => Util::getDateTimeDifference($start_date, $end_date),
                     'travel_reasons' => $request->travel_reasons,
                 ]);
 
+                // Tambahkan detail akomodasi untuk TravelAuthorisation
+                foreach ($request->accommodation_details as $detail) {
+                    $travelAuthorisation->accommodationDetails()->create([
+                        'name' => $detail['name'],
+                        'quantity' => $detail['quantity'],
+                        'price' => $detail['price'],
+                        'total_price' => $detail['quantity'] * $detail['price'],
+                        'description' => $detail['description']
+                    ]);
+                }
+
+                // Lakukan pengecekan kembali jika pembuatan TravelAuthorisation gagal
                 if (!$travelAuthorisation) {
-                    throw new Exception("An error occurred while storing the leave application.");
+                    throw new Exception("An error occurred while storing the travel authorisation.");
                 }
             }
         } catch (Exception $e) {
