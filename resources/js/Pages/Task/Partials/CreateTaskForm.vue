@@ -8,7 +8,6 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { useForm, usePage } from "@inertiajs/vue3";
 
-const loggedRole = usePage().props.loggedRole;
 const users = usePage().props.users;
 const projects = usePage().props.projects;
 const priorities = usePage().props.priorities;

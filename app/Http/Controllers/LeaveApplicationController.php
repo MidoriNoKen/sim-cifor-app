@@ -15,27 +15,28 @@ use Inertia\Inertia;
 
 class LeaveApplicationController extends Controller
 {
-    private $leaveApplicationService, $approvalService, $userService, $loggedRole, $loggedPosition, $notificationService;
+    private $leaveApplicationService, $approvalService, $userService, $loggedPosition, $notificationService;
 
     public function __construct(LeaveApplicationService $leaveApplicationService, ApprovalService $approvalService, UserService $userService, NotificationService $notificationService)
     {
         $this->leaveApplicationService = $leaveApplicationService;
         $this->approvalService = $approvalService;
         $this->userService = $userService;
-        $this->loggedRole = $userService->getLoggedRole();
         $this->loggedPosition = $userService->getLoggedPosition();
         $this->notificationService = $notificationService;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $leaveApplications = $this->leaveApplicationService->getAllByLoggedPosition();
+        $page = $request->input('page', 1);
+        $perPage = $request->input('per_page', 5);
+        $leaveApplications = $this->leaveApplicationService->getAllByLoggedPosition($page, $perPage);
 
-        $leaveApplications->each(function ($leaveApplication) {
+        foreach ($leaveApplications as $leaveApplication) {
             $this->approvalService->formattedData($leaveApplication);
-        });
+        }
 
-        return Inertia::render('LeaveApplication/Index')->with(['leaveApplications' => $leaveApplications, 'loggedRole' => $this->loggedRole]);
+        return Inertia::render('LeaveApplication/Index')->with(['leaveApplications' => $leaveApplications]);
     }
 
     public function show($id)
@@ -44,7 +45,7 @@ class LeaveApplicationController extends Controller
         $user = $this->userService->getUserByIdWithRelations($leaveApplication->applicant_id);
         $this->approvalService->formattedData($leaveApplication);
 
-        return Inertia::render('LeaveApplication/Show')->with(['user' => $user, 'leaveApplication' => $leaveApplication, 'loggedRole' => $this->loggedRole]);
+        return Inertia::render('LeaveApplication/Show')->with(['user' => $user, 'leaveApplication' => $leaveApplication]);
     }
 
     public function create()
@@ -75,8 +76,6 @@ class LeaveApplicationController extends Controller
             $this->approvalService->approval($leaveApplication, $leaveApplication->supervisor_id, RoleEnum::STAFF, PositionEnum::SENIOR, ApprovalStatusEnum::SUPERVISOR_PENDING, ApprovalStatusEnum::MANAGER_PENDING);
             $this->notificationService->sendMail($supervisor, $applicant, ApprovalStatusEnum::MANAGER_PENDING, 'Leave Application');
             $this->notificationService->sendMail($applicant, $manager, ApprovalStatusEnum::MANAGER_PENDING, 'Leave Application');
-            dd($this->notificationService->sendMail($supervisor, $applicant, ApprovalStatusEnum::MANAGER_PENDING, 'Leave Application'),
-            $this->notificationService->sendMail($applicant, $manager, ApprovalStatusEnum::MANAGER_PENDING, 'Leave Application'));
         }
 
         else if ($this->loggedPosition === PositionEnum::MANAGER) {

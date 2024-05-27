@@ -71,14 +71,15 @@ class UserService
         return $this->getLoggedUser()->position;
     }
 
-    public function formattedData() {
-        $users = User::all();
-        $users->each(function ($user) {
+    public function formattedData($page, $perPage) {
+        $users = User::query()->paginate($perPage, ['*'], 'page', $page);
+
+        foreach ($users as $user) {
             $user->role = $user->role_id ? Role::find($user->role_id)->name : null;
             $user->supervisor = $user->supervisor_id ? User::find($user->supervisor_id)->name : null;
             $user->manager = $user->manager_id ? User::find($user->manager_id)->name : null;
             $user->born_date = Carbon::parse($user->born_date)->format('d F Y');
-        });
+        }
 
         return $users;
     }

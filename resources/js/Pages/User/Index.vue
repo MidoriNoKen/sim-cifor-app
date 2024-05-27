@@ -1,8 +1,13 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, router, usePage } from "@inertiajs/vue3";
+import { ref } from "vue";
+import { Bootstrap5Pagination } from "laravel-vue-pagination";
 
-const users = usePage().props.users;
+const users = ref(usePage().props.users);
+const currentPage = ref(usePage().props.users.current_page);
+const lastPage = ref(usePage().props.users.last_page);
+const perPage = ref(usePage().props.users.per_page);
 
 const showUser = (user) => {
     router.get(`/users/${user.id}`);
@@ -20,6 +25,23 @@ const deleteUser = (user) => {
     if (confirm("Are you sure you want to delete this user?")) {
         router.delete(`/users/${user.id}`);
     }
+};
+
+const getUsers = async (page = 1) => {
+    router.get(
+        `/users`,
+        { page },
+        {
+            preserveState: true,
+            replace: true,
+            onSuccess: (page) => {
+                users.value = page.props.users;
+                currentPage.value = page.props.users.current_page;
+                lastPage.value = page.props.users.last_page;
+                perPage.value = page.props.users.per_page;
+            },
+        }
+    );
 };
 </script>
 
@@ -43,20 +65,16 @@ const deleteUser = (user) => {
                                     <th>Email</th>
                                     <th>Role</th>
                                     <th>Position</th>
-                                    <th>Supervisor</th>
-                                    <th>Manager</th>
                                     <th>Born Date</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="user in users" :key="user.id">
+                                <tr v-for="user in users.data" :key="user.id">
                                     <td>{{ user.name }}</td>
                                     <td>{{ user.email }}</td>
                                     <td>{{ user.role }}</td>
                                     <td>{{ user.position }}</td>
-                                    <td>{{ user.supervisor }}</td>
-                                    <td>{{ user.manager }}</td>
                                     <td>{{ user.born_date }}</td>
                                     <td>
                                         <button
@@ -83,7 +101,17 @@ const deleteUser = (user) => {
                                 </tr>
                             </tbody>
                         </table>
+                        <Bootstrap5Pagination
+                            :data="users"
+                            @pagination-change-page="getUsers"
+                        />
                         <div class="text-center">
+                            <div
+                                class="mt-4 mb-4 fw-semibold"
+                                v-if="users.data.length == null"
+                            >
+                                No Data Available
+                            </div>
                             <button
                                 @click="createUser()"
                                 class="btn btn-primary hover-background btn-sm m-1"

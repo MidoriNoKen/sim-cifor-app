@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Enums\PositionEnum;
-use App\Enums\RoleEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Services\UserService;
 use App\Models\Role;
@@ -23,9 +22,11 @@ class UserController extends Controller
         $this->roleService = new Role();
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $users = $this->userService->formattedData();
+        $page = $request->input('page', 1);
+        $perPage = $request->input('per_page', 5);
+        $users = $this->userService->formattedData($page, $perPage);
         return Inertia::render('User/Index')->with('users', $users);
     }
 

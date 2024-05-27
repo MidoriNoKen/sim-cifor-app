@@ -18,6 +18,15 @@ class TaskService
         return Task::all();
     }
 
+    public function getAllWithPaginate($page, $perPage) {
+        $tasks = Task::query()->paginate($perPage, ['*'], 'page', $page);
+        foreach ($tasks as $task) {
+            $assigned = User::find($task->assigned_user);
+            $task->assigned_user = $assigned->name;
+        }
+        return $tasks;
+    }
+
     public function getByIdWithPM($id) {
         $task = Task::find($id);
         $task->pm = $task->taskManager->name;

@@ -1,9 +1,14 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, router, usePage } from "@inertiajs/vue3";
+import { Bootstrap5Pagination } from "laravel-vue-pagination";
+import { ref } from "vue";
 
-const { projects, loggedPosition } = usePage().props;
 const { role, position } = usePage().props.auth.user;
+const projects = ref(usePage().props.projects);
+const currentPage = ref(usePage().props.projects.current_page);
+const lastPage = ref(usePage().props.projects.last_page);
+const perPage = ref(usePage().props.projects.per_page);
 
 const showProject = (project) => {
     router.get(`/projects/${project.id}`, project);
@@ -21,6 +26,23 @@ const deleteProject = (project) => {
 
 const createProject = () => {
     router.get(`/projects/create`);
+};
+
+const getProjects = async (page = 1) => {
+    router.get(
+        `/projects`,
+        { page },
+        {
+            preserveState: true,
+            replace: true,
+            onSuccess: (page) => {
+                projects.value = page.props.projects;
+                currentPage.value = page.props.projects.current_page;
+                lastPage.value = page.props.projects.last_page;
+                perPage.value = page.props.projects.per_page;
+            },
+        }
+    );
 };
 </script>
 
@@ -51,7 +73,7 @@ const createProject = () => {
                             </thead>
                             <tbody>
                                 <tr
-                                    v-for="project in projects"
+                                    v-for="project in projects.data"
                                     :key="project.id"
                                 >
                                     <td>{{ project.name }}</td>
@@ -93,7 +115,17 @@ const createProject = () => {
                                 </tr>
                             </tbody>
                         </table>
+                        <Bootstrap5Pagination
+                            :data="projects"
+                            @pagination-change-page="getProjects"
+                        />
                         <div class="text-center">
+                            <div
+                                class="mt-4 mb-4 fw-semibold"
+                                v-if="projects.data.length == null"
+                            >
+                                No Data Available
+                            </div>
                             <button
                                 @click="createProject()"
                                 class="btn btn-primary hover-background btn-sm m-1"

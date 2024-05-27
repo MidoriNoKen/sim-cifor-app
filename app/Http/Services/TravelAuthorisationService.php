@@ -25,7 +25,7 @@ class TravelAuthorisationService
         return TravelAuthorisation::find($id);
     }
 
-    public function getAllByLoggedPosition()
+    public function getAllByLoggedPosition($page, $perPage)
     {
         $user = $this->user;
         $roleName = $user->role->name;
@@ -45,7 +45,7 @@ class TravelAuthorisationService
 
         $query->orderBy('start_date', 'desc');
 
-        return $query->get();
+        return $query->paginate($perPage, ['*'], 'page', $page);
     }
 
     public function store($request)

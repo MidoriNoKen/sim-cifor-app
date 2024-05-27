@@ -25,8 +25,7 @@ class LeaveApplicationService
         return LeaveApplication::find($id);
     }
 
-    public function getAllByLoggedPosition()
-    {
+    public function getAllByLoggedPosition($page, $perPage) {
         $user = $this->user;
         $roleName = $user->role->name;
         $position = $user->position;
@@ -42,7 +41,7 @@ class LeaveApplicationService
 
         $query->orderBy('start_date', 'desc');
 
-        return $query->get();
+        return $query->paginate($perPage, ['*'], 'page', $page);
     }
 
     public function store($request)

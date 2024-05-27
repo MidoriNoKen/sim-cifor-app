@@ -23,12 +23,12 @@ class TaskController extends Controller
         $this->loggedRole = $userService->getLoggedRole();
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $loggedRole = $this->loggedRole;
-        $tasks = $this->taskService->getAll();
-        $assigned = $this->userService->getUserById($tasks->value('assigned_user'))->name;
-        return Inertia::render('Task/Index')->with(['loggedRole' => $loggedRole, 'tasks' => $tasks, 'assigned' => $assigned]);
+        $page = $request->input('page', 1);
+        $perPage = $request->input('per_page', 5);
+        $tasks = $this->taskService->getAllWithPaginate($page, $perPage);
+        return Inertia::render('Task/Index')->with(['tasks' => $tasks]);
     }
 
     public function create()

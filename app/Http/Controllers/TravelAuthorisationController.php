@@ -22,19 +22,20 @@ class TravelAuthorisationController extends Controller
         $this->travelAuthorisationService = $travelAuthorisationService;
         $this->approvalService = $approvalService;
         $this->userService = $userService;
-        $this->loggedRole = $userService->getLoggedRole();
         $this->loggedPosition = $userService->getLoggedPosition();
         $this->notificationService = $notificationService;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $travelAuthorisations = $this->travelAuthorisationService->getAllByLoggedPosition();
-        $travelAuthorisations->each(function ($travelAuthorisation) {
+        $page = $request->input('page', 1);
+        $perPage = $request->input('per_page', 5);
+        $travelAuthorisations = $this->travelAuthorisationService->getAllByLoggedPosition($page, $perPage);
+        foreach ($travelAuthorisations as $travelAuthorisation) {
             $this->approvalService->formattedData($travelAuthorisation);
-        });
+        }
 
-        return Inertia::render('TravelAuthorisation/Index')->with(['travelAuthorisations' => $travelAuthorisations, 'loggedRole' => $this->loggedRole]);
+        return Inertia::render('TravelAuthorisation/Index')->with(['travelAuthorisations' => $travelAuthorisations]);
     }
 
     public function show($id)
@@ -45,7 +46,7 @@ class TravelAuthorisationController extends Controller
 
         $this->approvalService->formattedData($travelAuthorisation);
 
-        return Inertia::render('TravelAuthorisation/Show')->with(['user' => $user, 'travelAuthorisation' => $travelAuthorisation, 'loggedRole' => $this->loggedRole, 'finance' => $finance]);
+        return Inertia::render('TravelAuthorisation/Show')->with(['user' => $user, 'travelAuthorisation' => $travelAuthorisation, 'finance' => $finance]);
     }
 
     public function create()

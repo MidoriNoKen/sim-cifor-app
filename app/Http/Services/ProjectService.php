@@ -12,8 +12,8 @@ class ProjectService
         return Project::all();
     }
 
-    public function getAllWithPM() {
-        $projects = Project::all();
+    public function getAllWithPM($page, $perPage) {
+        $projects = Project::query()->paginate($perPage, ['*'], 'page', $page);
         foreach ($projects as $project) {
             $project->pm = $project->projectManager->name;
         }

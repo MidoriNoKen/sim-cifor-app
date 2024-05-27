@@ -19,11 +19,12 @@ class ProjectController extends Controller
         $this->userService = $userService;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $loggedPosition = $this->userService->getLoggedPosition();
-        $projects = $this->projectService->getAllWithPM();
-        return Inertia::render('Project/Index')->with(['loggedPosition' => $loggedPosition, 'projects' => $projects]);
+        $page = $request->input('page', 1);
+        $perPage = $request->input('per_page', 5);
+        $projects = $this->projectService->getAllWithPM($page, $perPage);
+        return Inertia::render('Project/Index')->with(['projects' => $projects]);
     }
 
     public function create()
