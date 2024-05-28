@@ -40,7 +40,7 @@ class TravelAuthorisationController extends Controller
 
     public function show($id)
     {
-        $travelAuthorisation = $this->travelAuthorisationService->getById($id);
+        $travelAuthorisation = $this->travelAuthorisationService->getByIdWithAccomodation($id);
         $user = $this->userService->getUserByIdWithRelations($travelAuthorisation->applicant_id);
         $finance = $this->userService->getUserById($travelAuthorisation->finance_id);
 

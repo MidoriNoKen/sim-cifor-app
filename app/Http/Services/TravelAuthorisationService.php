@@ -5,6 +5,7 @@ namespace App\Http\Services;
 use App\Enums\ApprovalStatusEnum;
 use App\Enums\PositionEnum;
 use App\Enums\RoleEnum;
+use App\Models\AccommodationDetail;
 use App\Models\TravelAuthorisation;
 use App\Utils\Util;
 use Carbon\Carbon;
@@ -23,6 +24,14 @@ class TravelAuthorisationService
     public function getById($id)
     {
         return TravelAuthorisation::find($id);
+    }
+
+    public function getByIdWithAccomodation($id)
+    {
+        $accommodationDetails = AccommodationDetail::where('travel_authorisation_id', $id)->get();
+        $travelAuthorisation = TravelAuthorisation::find($id);
+        $travelAuthorisation->accommodationDetails = $accommodationDetails;
+        return $travelAuthorisation;
     }
 
     public function getAllByLoggedPosition($page, $perPage)
@@ -64,29 +73,23 @@ class TravelAuthorisationService
                 'finance_id' => 'required'
             ]);
 
-            // Pastikan validasi benar-benar berhasil
             if (!$validation) {
                 throw new Exception("Invalid input data.");
             }
 
-            // Ubah timezone dari tanggal
             $start_date = Carbon::parse($request->start_date)->timezone('Asia/Jakarta');
             $end_date = Carbon::parse($request->end_date)->timezone('Asia/Jakarta');
 
-            // Periksa apakah tanggal awal dan akhir sama dan apakah tanggal tersebut adalah hari libur
             if ($start_date->equalTo($end_date) && $this->holidayService->isHoliday($start_date)) {
                 throw new Exception("Tanggal " . Util::formatDateToIndonesian($start_date) . " adalah hari Libur Nasional.");
             }
 
-            // Ambil daftar hari libur di antara tanggal awal dan akhir
             $holidays = $this->holidayService->getHolidaysInRange($start_date, $end_date);
 
             if (!$holidays->isEmpty()) {
-                // Bagi rentang tanggal menjadi rentang yang tidak termasuk hari libur
                 $dateRanges = $this->holidayService->splitDateRange($start_date, $end_date, $holidays);
 
                 foreach ($dateRanges as $range) {
-                    // Buat objek TravelAuthorisation untuk setiap rentang tanggal
                     $travelAuthorisation = TravelAuthorisation::create([
                         'applicant_id' => auth()->id(),
                         'status' => ApprovalStatusEnum::SUPERVISOR_PENDING,
@@ -104,24 +107,11 @@ class TravelAuthorisationService
                         'travel_reasons' => $request->travel_reasons,
                     ]);
 
-                    // Tambahkan detail akomodasi untuk setiap objek TravelAuthorisation
-                    foreach ($request->accommodation_details as $detail) {
-                        $travelAuthorisation->accommodationDetails()->create([
-                            'name' => $detail['name'],
-                            'quantity' => $detail['quantity'],
-                            'price' => $detail['price'],
-                            'total_price' => $detail['quantity'] * $detail['price'],
-                            'description' => $detail['description']
-                        ]);
-                    }
-
-                    // Lakukan pengecekan kembali jika pembuatan TravelAuthorisation gagal
                     if (!$travelAuthorisation) {
                         throw new Exception("An error occurred while storing the travel authorisation.");
                     }
                 }
             } else {
-                // Jika tidak ada hari libur, buat TravelAuthorisation untuk rentang tanggal tersebut
                 $travelAuthorisation = TravelAuthorisation::create([
                     'applicant_id' => auth()->id(),
                     'status' => ApprovalStatusEnum::SUPERVISOR_PENDING,
@@ -139,21 +129,19 @@ class TravelAuthorisationService
                     'travel_reasons' => $request->travel_reasons,
                 ]);
 
-                // Tambahkan detail akomodasi untuk TravelAuthorisation
-                foreach ($request->accommodation_details as $detail) {
-                    $travelAuthorisation->accommodationDetails()->create([
-                        'name' => $detail['name'],
-                        'quantity' => $detail['quantity'],
-                        'price' => $detail['price'],
-                        'total_price' => $detail['quantity'] * $detail['price'],
-                        'description' => $detail['description']
-                    ]);
-                }
-
-                // Lakukan pengecekan kembali jika pembuatan TravelAuthorisation gagal
                 if (!$travelAuthorisation) {
                     throw new Exception("An error occurred while storing the travel authorisation.");
                 }
+            }
+
+            foreach ($request->accommodation_details as $detail) {
+                $travelAuthorisation->accommodationDetails()->create([
+                    'name' => $detail['name'],
+                    'quantity' => $detail['quantity'],
+                    'price' => $detail['price'],
+                    'total_price' => $detail['quantity'] * $detail['price'],
+                    'description' => $detail['description']
+                ]);
             }
         } catch (Exception $e) {
             throw new Exception($e->getMessage());

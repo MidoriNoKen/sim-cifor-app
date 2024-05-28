@@ -3,6 +3,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, usePage } from "@inertiajs/vue3";
 
 const { travelAuthorisation, user, finance } = usePage().props;
+console.log(travelAuthorisation);
 const loggedRole = usePage().props.auth.role;
 </script>
 
@@ -122,13 +123,6 @@ const loggedRole = usePage().props.auth.role;
                         </div>
                     </div>
                     <div class="row m-4">
-                        <div class="col-4">Accommodation Detail</div>
-                        <div class="col-4">:</div>
-                        <div class="col-4">
-                            {{ travelAuthorisation.accommodation_detail }}
-                        </div>
-                    </div>
-                    <div class="row m-4">
                         <div class="col-4">Travel Reason</div>
                         <div class="col-4">:</div>
                         <div class="col-4">
@@ -154,6 +148,56 @@ const loggedRole = usePage().props.auth.role;
                         <div class="col-4">:</div>
                         <div class="col-4">
                             {{ travelAuthorisation.finance_reject_reasons }}
+                        </div>
+                    </div>
+                </div>
+                <div class="p-8 bg-white shadow sm:rounded-lg">
+                    <h2
+                        class="font-semibold text-xl text-gray-800 leading-tight"
+                    >
+                        Accommodation Detail
+                    </h2>
+                </div>
+                <div
+                    class="p-8 bg-white shadow sm:rounded-lg mb-4"
+                    v-for="(
+                        accommodationDetail, index
+                    ) in travelAuthorisation.accommodationDetails"
+                    :key="index"
+                >
+                    <div class="row m-4">
+                        <div class="col-4">Name</div>
+                        <div class="col-4">:</div>
+                        <div class="col-4">
+                            {{ accommodationDetail.name }}
+                        </div>
+                    </div>
+                    <div class="row m-4">
+                        <div class="col-4">Quantity</div>
+                        <div class="col-4">:</div>
+                        <div class="col-4">
+                            {{ accommodationDetail.quantity }}
+                        </div>
+                    </div>
+                    <div class="row m-4">
+                        <div class="col-4">Price</div>
+                        <div class="col-4">:</div>
+                        <div class="col-4">
+                            {{ accommodationDetail.price }}
+                        </div>
+                    </div>
+                    <div class="row m-4">
+                        <div class="col-4">Total Price</div>
+                        <div class="col-4">:</div>
+                        <div class="col-4">
+                            {{ accommodationDetail.total_price }}
+                        </div>
+                    </div>
+                    <div class="row m-4">
+                        <div class="col-4">Description</div>
+                        <div class="col-4">:</div>
+                        <div class="col-4">
+                            {{ accommodationDetail.description }}
                         </div>
                     </div>
                 </div>
