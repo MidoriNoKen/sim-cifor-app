@@ -17,7 +17,7 @@ const form = useForm({
     password_confirmation: "",
     role_id: null,
     position: null,
-    supervisor_id: null,
+    officer_id: null,
     manager_id: null,
     born_date: null,
 });
@@ -102,16 +102,6 @@ const form = useForm({
             :form="form"
             v-model="form.position_id"
             :positions="positions"
-        />
-        <OptionSupervisorList
-            :form="form"
-            v-model="form.supervisor_id"
-            :supervisors="supervisors"
-        />
-        <OptionManagerList
-            :form="form"
-            v-model="form.manager_id"
-            :managers="managers"
         />
 
         <div class="mt-4">

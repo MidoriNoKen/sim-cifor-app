@@ -7,22 +7,22 @@ const props = defineProps(["form", "supervisors"]);
 
 <template>
     <div class="mt-4">
-        <InputLabel for="supervisor_id" value="Supervisor" />
+        <InputLabel for="officer_id" value="officer" />
         <select
             class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-            id="supervisor_id"
-            v-model="form.supervisor_id"
+            id="officer_id"
+            v-model="form.officer_id"
             required
         >
-            <option value="null" disabled>Select Supervisor</option>
+            <option value="null" disabled>Select officer</option>
             <option
-                v-for="supervisor in supervisors"
-                :value="supervisor.id"
-                :key="supervisor.id"
+                v-for="officer in supervisors"
+                :value="officer.id"
+                :key="officer.id"
             >
-                {{ supervisor.name }}
+                {{ officer.name }}
             </option>
         </select>
-        <InputError class="mt-2" :message="form.errors.supervisor_id" />
+        <InputError class="mt-2" :message="form.errors.officer_id" />
     </div>
 </template>

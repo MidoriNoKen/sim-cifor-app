@@ -34,7 +34,7 @@ const unreject = (leaveApplication) => {
         Show
     </button>
     <div v-if="leaveApplication.isSupervisor">
-        <span v-if="leaveApplication.status === 'Need Supervisor Approval'">
+        <span v-if="leaveApplication.status === 'Need officer Approval'">
             <button
                 @click="approve(leaveApplication)"
                 class="btn btn-success hover-background btn-sm m-1"
@@ -50,7 +50,7 @@ const unreject = (leaveApplication) => {
                 Reject
             </button>
         </span>
-        <span v-else-if="leaveApplication.status === 'Need Manager Approval'">
+        <span v-else-if="leaveApplication.status === 'Need HR Approval'">
             <button
                 @click="disapprove(leaveApplication)"
                 class="btn btn-danger hover-background btn-sm m-1"
@@ -73,7 +73,7 @@ const unreject = (leaveApplication) => {
                 Approved
             </button>
         </span>
-        <span v-else-if="leaveApplication.status === 'Rejected by Manager'">
+        <span v-else-if="leaveApplication.status === 'Rejected by HR'">
             <button
                 class="btn btn-sm m-1"
                 style="
@@ -84,10 +84,10 @@ const unreject = (leaveApplication) => {
                 "
                 disabled
             >
-                Rejected by Manager
+                Rejected by HR
             </button>
         </span>
-        <span v-else-if="leaveApplication.status === 'Rejected by Supervisor'">
+        <span v-else-if="leaveApplication.status === 'Rejected by officer'">
             <button
                 @click="unreject(leaveApplication)"
                 class="btn btn-danger hover-background btn-sm m-1"
@@ -98,7 +98,7 @@ const unreject = (leaveApplication) => {
         </span>
     </div>
     <div v-else-if="leaveApplication.isManager">
-        <span v-if="leaveApplication.status === 'Need Supervisor Approval'">
+        <span v-if="leaveApplication.status === 'Need officer Approval'">
             <button
                 class="btn btn-sm m-1"
                 style="
@@ -109,10 +109,10 @@ const unreject = (leaveApplication) => {
                 "
                 disabled
             >
-                Need Supervisor Approval
+                Need officer Approval
             </button>
         </span>
-        <span v-else-if="leaveApplication.status === 'Need Manager Approval'">
+        <span v-else-if="leaveApplication.status === 'Need HR Approval'">
             <button
                 @click="approve(leaveApplication)"
                 class="btn btn-success hover-background btn-sm m-1"
@@ -137,7 +137,7 @@ const unreject = (leaveApplication) => {
                 Disapprove
             </button>
         </span>
-        <span v-else-if="leaveApplication.status === 'Rejected by Supervisor'">
+        <span v-else-if="leaveApplication.status === 'Rejected by officer'">
             <button
                 class="btn btn-sm m-1"
                 style="
@@ -148,10 +148,10 @@ const unreject = (leaveApplication) => {
                 "
                 disabled
             >
-                Rejected by Supervisor
+                Rejected by officer
             </button>
         </span>
-        <span v-else-if="leaveApplication.status === 'Rejected by Manager'">
+        <span v-else-if="leaveApplication.status === 'Rejected by HR'">
             <button
                 @click="unreject(leaveApplication)"
                 class="btn btn-danger hover-background btn-sm m-1"

@@ -1,24 +1,19 @@
 <script setup>
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
-import OptionManagerList from "@/Components/Options/OptionManagerList.vue";
 import OptionPositionList from "@/Components/Options/OptionPositionList.vue";
 import OptionRoleList from "@/Components/Options/OptionRoleList.vue";
-import OptionSupervisorList from "@/Components/Options/OptionSupervisorList.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { useForm, usePage } from "@inertiajs/vue3";
 
-const { user, loggedRole, supervisors, managers, roles, positions } =
-    usePage().props;
+const { user, roles, positions } = usePage().props;
 
 const form = useForm({
     name: user.name,
     email: user.email,
     role_id: user.role_id,
     position: user.position,
-    supervisor_id: user.supervisor_id,
-    manager_id: user.manager_id,
     born_date: user.born_date,
 });
 </script>
@@ -76,16 +71,6 @@ const form = useForm({
                 :form="form"
                 v-model="form.position"
                 :positions="positions"
-            />
-            <OptionSupervisorList
-                :form="form"
-                v-model="form.supervisor_id"
-                :supervisors="supervisors"
-            />
-            <OptionManagerList
-                :form="form"
-                v-model="form.manager_id"
-                :managers="managers"
             />
 
             <div class="mt-4">

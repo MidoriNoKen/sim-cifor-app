@@ -28,7 +28,7 @@ class ApprovalService
     public function getAccessData($data)
     {
         $loggedId = $this->loggedId;
-        $data->isSupervisor = $loggedId == $data->supervisor_id ? true : false;
+        $data->isSupervisor = $loggedId == $data->officer_id ? true : false;
         $data->isManager = $loggedId == $data->manager_id ? true : false;
         if ($this->loggedPosition == PositionEnum::FINANCE)
             $data->isFinance = true;
@@ -71,7 +71,7 @@ class ApprovalService
         $this->checkAccess($userId, $role, $position);
         $this->checkStatus($data->status, $status);
 
-        if ($this->loggedPosition == PositionEnum::MANAGER)
+        if ($this->loggedPosition == PositionEnum::HR)
             $data->manager_reject_reasons = $reasons;
 
         else if ($this->loggedPosition == PositionEnum::SENIOR)

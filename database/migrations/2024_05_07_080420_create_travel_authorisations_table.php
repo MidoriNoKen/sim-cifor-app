@@ -12,7 +12,7 @@ class CreateTravelAuthorisationsTable extends Migration
             $table->id();
             $table->string('applicant_id');
             $table->string('status');
-            $table->string('supervisor_id')->nullable();
+            $table->string('officer_id')->nullable();
             $table->text('supervisor_reject_reasons')->nullable();
             $table->string('manager_id')->nullable();
             $table->text('manager_reject_reasons')->nullable();

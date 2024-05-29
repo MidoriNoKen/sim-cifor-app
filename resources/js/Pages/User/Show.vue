@@ -3,11 +3,10 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, usePage } from "@inertiajs/vue3";
 
 const user = usePage().props.user;
-const loggedRole = usePage().props.loggedRole;
 </script>
 
 <template>
-    <Head title="Show Tasks" />
+    <Head title="User Detail" />
 
     <AuthenticatedLayout>
         <template #header>
@@ -23,7 +22,7 @@ const loggedRole = usePage().props.loggedRole;
                             <h2
                                 class="font-semibold text-xl text-gray-800 leading-tight mb-10"
                             >
-                                User Detail
+                                User Information
                             </h2>
                             <div class="row m-4">
                                 <div class="col-4">Name</div>
@@ -44,22 +43,6 @@ const loggedRole = usePage().props.loggedRole;
                                 <div class="col-4">:</div>
                                 <div class="col-4">
                                     {{ user.role.name }}
-                                </div>
-                            </div>
-                            <div class="row m-4">
-                                <div class="col-4">Supervisor</div>
-                                <div class="col-4">:</div>
-                                <div class="col-4">
-                                    {{
-                                        user.supervisor ? user.supervisor : "-"
-                                    }}
-                                </div>
-                            </div>
-                            <div class="row m-4">
-                                <div class="col-4">Manager</div>
-                                <div class="col-4">:</div>
-                                <div class="col-4">
-                                    {{ user.manager ? user.manager : "-" }}
                                 </div>
                             </div>
                             <div class="row m-4">

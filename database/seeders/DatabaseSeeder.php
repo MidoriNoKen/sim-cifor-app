@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\PositionEnum;
 use App\Enums\RoleEnum;
 use App\Models\Role;
 use App\Models\User;
@@ -17,15 +18,19 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         Role::factory()->create([
-            'name' => 'Manager',
-        ]);
-
-        Role::factory()->create([
             'name' => 'Admin',
         ]);
 
         Role::factory()->create([
-            'name' => 'Staff',
+            'name' => 'Employee',
+        ]);
+
+        Role::factory()->create([
+            'name' => 'Manager',
+        ]);
+
+        Role::factory()->create([
+            'name' => 'Director',
         ]);
 
         $role = Role::where('name', RoleEnum::ADMIN)->first();
@@ -35,7 +40,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@admin.com',
             'password' => Hash::make('123123123'),
             'role_id' => $role->id,
-            'position' => 'Admin',
+            'position' => PositionEnum::ADMIN,
             'born_date' => '2001-01-01',
         ]);
     }

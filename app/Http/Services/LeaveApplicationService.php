@@ -16,7 +16,7 @@ class LeaveApplicationService
 
     public function __construct(UserService $userService, HolidayService $holidayService)
     {
-        $this->user = $userService->getLoggedUser();
+        $this->user = $userService;
         $this->holidayService = $holidayService;
     }
 
@@ -31,12 +31,12 @@ class LeaveApplicationService
         $position = $user->position;
         $userId = $user->id;
 
-        $query = LeaveApplication::query()->with(["applicant", "supervisor", "manager"]);
+        $query = LeaveApplication::query()->with(["applicant", "officer", "HR"]);
 
         if ($roleName === RoleEnum::STAFF && $position === PositionEnum::SENIOR)
-        $query->where("applicant_id", $userId)->orWhere("supervisor_id", $userId);
+        $query->where("applicant_id", $userId)->orWhere("officer_id", $userId);
 
-        else if ($roleName === RoleEnum::MANAGER && $position === PositionEnum::MANAGER)
+        else if ($roleName === RoleEnum::HR && $position === PositionEnum::HR)
         $query->where("applicant_id", $userId)->orWhere("manager_id", $userId);
 
         $query->orderBy('start_date', 'desc');
@@ -75,7 +75,7 @@ class LeaveApplicationService
                     $leaveApplication = LeaveApplication::create([
                         'applicant_id' => auth()->id(),
                         'status' => ApprovalStatusEnum::SUPERVISOR_PENDING,
-                        'supervisor_id' => auth()->user()->supervisor_id,
+                        'officer_id' => auth()->user()->officer_id,
                         'supervisor_reject_reasons' => null,
                         'manager_id' => auth()->user()->manager_id,
                         'manager_reject_reasons' => null,
@@ -93,7 +93,7 @@ class LeaveApplicationService
                 $leaveApplication = LeaveApplication::create([
                     'applicant_id' => auth()->id(),
                     'status' => ApprovalStatusEnum::SUPERVISOR_PENDING,
-                    'supervisor_id' => auth()->user()->supervisor_id,
+                    'officer_id' => auth()->user()->officer_id,
                     'supervisor_reject_reasons' => null,
                     'manager_id' => auth()->user()->manager_id,
                     'manager_reject_reasons' => null,

@@ -46,17 +46,17 @@ const loggedRole = usePage().props.auth.role;
                         </div>
                     </div>
                     <div class="row m-4">
-                        <div class="col-4">Supervisor</div>
+                        <div class="col-4">officer</div>
                         <div class="col-4">:</div>
                         <div class="col-4">
-                            {{ user.supervisor }}
+                            {{ user.officer }}
                         </div>
                     </div>
                     <div class="row m-4">
-                        <div class="col-4">Manager</div>
+                        <div class="col-4">HR</div>
                         <div class="col-4">:</div>
                         <div class="col-4">
-                            {{ user.manager }}
+                            {{ user.HR }}
                         </div>
                     </div>
                     <div class="row m-4">
@@ -130,14 +130,14 @@ const loggedRole = usePage().props.auth.role;
                         </div>
                     </div>
                     <div class="row m-4">
-                        <div class="col-4">Supervisor Reject Reasons</div>
+                        <div class="col-4">officer Reject Reasons</div>
                         <div class="col-4">:</div>
                         <div class="col-4">
                             {{ travelAuthorisation.supervisor_reject_reasons }}
                         </div>
                     </div>
                     <div class="row m-4">
-                        <div class="col-4">Manager Reject Reasons</div>
+                        <div class="col-4">HR Reject Reasons</div>
                         <div class="col-4">:</div>
                         <div class="col-4">
                             {{ travelAuthorisation.manager_reject_reasons }}
@@ -159,7 +159,16 @@ const loggedRole = usePage().props.auth.role;
                     </h2>
                 </div>
                 <div
+                    class="p-4 bg-white shadow sm:rounded-lg text-center"
+                    v-if="travelAuthorisation.accommodationDetails.length === 0"
+                >
+                    <div class="row">
+                        <div class="col-12">No Accommodation</div>
+                    </div>
+                </div>
+                <div
                     class="p-8 bg-white shadow sm:rounded-lg mb-4"
+                    v-else
                     v-for="(
                         accommodationDetail, index
                     ) in travelAuthorisation.accommodationDetails"

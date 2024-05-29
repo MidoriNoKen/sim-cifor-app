@@ -46,17 +46,17 @@ const loggedRole = usePage().props.loggedRole;
                         </div>
                     </div>
                     <div class="row m-4">
-                        <div class="col-4">Supervisor</div>
+                        <div class="col-4">officer</div>
                         <div class="col-4">:</div>
                         <div class="col-4">
-                            {{ user.supervisor }}
+                            {{ user.officer }}
                         </div>
                     </div>
                     <div class="row m-4">
-                        <div class="col-4">Manager</div>
+                        <div class="col-4">HR</div>
                         <div class="col-4">:</div>
                         <div class="col-4">
-                            {{ user.manager }}
+                            {{ user.HR }}
                         </div>
                     </div>
                     <div class="row m-4">
@@ -116,14 +116,14 @@ const loggedRole = usePage().props.loggedRole;
                         </div>
                     </div>
                     <div class="row m-4">
-                        <div class="col-4">Supervisor Reject Reasons</div>
+                        <div class="col-4">officer Reject Reasons</div>
                         <div class="col-4">:</div>
                         <div class="col-4">
                             {{ leaveApplication.supervisor_reject_reasons }}
                         </div>
                     </div>
                     <div class="row m-4">
-                        <div class="col-4">Manager Reject Reasons</div>
+                        <div class="col-4">HR Reject Reasons</div>
                         <div class="col-4">:</div>
                         <div class="col-4">
                             {{ leaveApplication.manager_reject_reasons }}

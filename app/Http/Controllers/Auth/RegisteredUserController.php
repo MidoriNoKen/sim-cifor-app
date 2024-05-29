@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Enums\PositionEnum;
 use App\Enums\RoleEnum;
 use App\Http\Controllers\Controller;
 use App\Models\Role;
@@ -37,22 +38,17 @@ class RegisteredUserController extends Controller
             'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'password_confirmation' => 'required|string',
-            'position' => 'required|string',
-            'supervisor_id' => 'nullable|string',
-            'manager_id' => 'nullable|string',
             'born_date' => 'required|date',
         ]);
 
-        $role = Role::where('name', RoleEnum::STAFF)->value('id');
+        $role = Role::where('name', RoleEnum::EMPLOYEE)->value('id');
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'password_confirmation' => $request->password_confirmation,
-            'position' => $request->position,
-            'supervisor_id' => $request->supervisor_id,
-            'manager_id' => $request->manager_id,
+            'position' => PositionEnum::STAFF,
             'born_date' => $request->born_date,
             'role_id' => $role
         ]);

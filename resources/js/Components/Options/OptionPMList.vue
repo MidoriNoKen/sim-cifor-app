@@ -8,14 +8,14 @@ const props = defineProps(["form", "pms"]);
 
 <template>
     <div class="mt-4">
-        <InputLabel for="pm_id" value="Project Manager" />
+        <InputLabel for="pm_id" value="Project HR" />
         <select
             class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
             id="pm_id"
             v-model="form.pm_id"
             required
         >
-            <option value="null" disabled>Select Project Manager</option>
+            <option value="null" disabled>Select Project HR</option>
             <option v-for="pm in pms" :key="pm.id" :value="pm.id">
                 {{ pm.name }}
             </option>

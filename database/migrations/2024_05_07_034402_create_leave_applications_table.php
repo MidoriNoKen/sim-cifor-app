@@ -18,11 +18,11 @@ class CreateLeaveApplicationsTable extends Migration
             $table->string('applicant_id');
             $table->string('status');
 
-            // Supervisor Status and Notes
-            $table->string('supervisor_id')->nullable();
+            // officer Status and Notes
+            $table->string('officer_id')->nullable();
             $table->text('supervisor_reject_reasons')->nullable();
 
-            // Manager Status and Notes
+            // HR Status and Notes
             $table->string('manager_id')->nullable();
             $table->text('manager_reject_reasons')->nullable();
 

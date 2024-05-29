@@ -13,7 +13,7 @@ class LeaveApplication extends Model
         'id',
         'applicant_id',
         'status',
-        'supervisor_id',
+        'officer_id',
         'supervisor_reject_reasons',
         'manager_id',
         'manager_reject_reasons',
@@ -32,17 +32,17 @@ class LeaveApplication extends Model
     }
 
     /**
-     * Get the supervisor who is responsible for approving this leave application.
+     * Get the officer who is responsible for approving this leave application.
      */
-    public function supervisor()
+    public function officer()
     {
-        return $this->belongsTo(User::class, 'supervisor_id');
+        return $this->belongsTo(User::class, 'officer_id');
     }
 
     /**
-     * Get the manager who is responsible for approving this leave application.
+     * Get the HR who is responsible for approving this leave application.
      */
-    public function manager()
+    public function HR()
     {
         return $this->belongsTo(User::class, 'manager_id');
     }

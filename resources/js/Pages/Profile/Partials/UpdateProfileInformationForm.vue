@@ -12,7 +12,7 @@ const form = useForm({
     name: user.name,
     email: user.email,
     position: user.position,
-    supervisor_id: user.supervisor_id,
+    officer_id: user.officer_id,
     manager_id: user.manager_id,
     born_date: user.born_date,
 });

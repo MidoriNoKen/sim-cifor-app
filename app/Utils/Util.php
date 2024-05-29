@@ -59,4 +59,11 @@ class Util
         }
         return (date_diff($startDateTime, $endDateTime)->format('%a') + 1) . ' Hari';
     }
+
+    public static function getPagination($request)
+    {
+        $page = $request->input('page', 1);
+        $perPage = $request->input('per_page', 5);
+        return [$page, $perPage];
+    }
 }

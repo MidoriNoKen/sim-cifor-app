@@ -22,7 +22,7 @@ const loggedRole = usePage().props.auth.role;
                     <h2
                         class="font-semibold text-xl text-gray-800 leading-tight mb-10"
                     >
-                        Project Manager Detail
+                        Project HR Detail
                     </h2>
                     <div class="row m-4">
                         <div class="col-4">Name</div>
@@ -46,17 +46,17 @@ const loggedRole = usePage().props.auth.role;
                         </div>
                     </div>
                     <div class="row m-4">
-                        <div class="col-4">Supervisor</div>
+                        <div class="col-4">officer</div>
                         <div class="col-4">:</div>
                         <div class="col-4">
-                            {{ pm.supervisor ? pm.supervisor : "-" }}
+                            {{ pm.officer ? pm.officer : "-" }}
                         </div>
                     </div>
                     <div class="row m-4">
-                        <div class="col-4">Manager</div>
+                        <div class="col-4">HR</div>
                         <div class="col-4">:</div>
                         <div class="col-4">
-                            {{ pm.manager ? pm.manager : "-" }}
+                            {{ pm.HR ? pm.HR : "-" }}
                         </div>
                     </div>
                     <div class="row m-4">

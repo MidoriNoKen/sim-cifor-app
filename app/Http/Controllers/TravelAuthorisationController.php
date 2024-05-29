@@ -65,19 +65,19 @@ class TravelAuthorisationController extends Controller
     {
         $travelAuthorisation = $this->travelAuthorisationService->getById($id);
         $applicant = $this->userService->getUserByIdWithRelations($travelAuthorisation->applicant_id);
-        $supervisor = $this->userService->getUserById($travelAuthorisation->supervisor_id);
-        $manager = $this->userService->getUserById($travelAuthorisation->manager_id);
+        $officer = $this->userService->getUserById($travelAuthorisation->officer_id);
+        $HR = $this->userService->getUserById($travelAuthorisation->manager_id);
         $finance = $this->userService->getUserById($travelAuthorisation->finance_id);
 
         if ($this->loggedPosition === PositionEnum::SENIOR) {
-            $this->approvalService->approval($travelAuthorisation, $travelAuthorisation->supervisor_id, RoleEnum::STAFF, PositionEnum::SENIOR, ApprovalStatusEnum::SUPERVISOR_PENDING, ApprovalStatusEnum::MANAGER_PENDING);
-            $this->notificationService->sendMail($supervisor, $applicant, ApprovalStatusEnum::MANAGER_PENDING, 'Travel Authorisation');
-            $this->notificationService->sendMail($applicant, $manager, ApprovalStatusEnum::MANAGER_PENDING, 'Travel Authorisation');
+            $this->approvalService->approval($travelAuthorisation, $travelAuthorisation->officer_id, RoleEnum::STAFF, PositionEnum::SENIOR, ApprovalStatusEnum::SUPERVISOR_PENDING, ApprovalStatusEnum::MANAGER_PENDING);
+            $this->notificationService->sendMail($officer, $applicant, ApprovalStatusEnum::MANAGER_PENDING, 'Travel Authorisation');
+            $this->notificationService->sendMail($applicant, $HR, ApprovalStatusEnum::MANAGER_PENDING, 'Travel Authorisation');
         }
 
-        else if ($this->loggedPosition === PositionEnum::MANAGER) {
-            $this->approvalService->approval($travelAuthorisation, $travelAuthorisation->manager_id, RoleEnum::MANAGER, PositionEnum::MANAGER, ApprovalStatusEnum::MANAGER_PENDING, ApprovalStatusEnum::FINANCE_PENDING);
-            $this->notificationService->sendMail($manager, $applicant, ApprovalStatusEnum::FINANCE_PENDING, 'Travel Authorisation');
+        else if ($this->loggedPosition === PositionEnum::HR) {
+            $this->approvalService->approval($travelAuthorisation, $travelAuthorisation->manager_id, RoleEnum::HR, PositionEnum::HR, ApprovalStatusEnum::MANAGER_PENDING, ApprovalStatusEnum::FINANCE_PENDING);
+            $this->notificationService->sendMail($HR, $applicant, ApprovalStatusEnum::FINANCE_PENDING, 'Travel Authorisation');
             $this->notificationService->sendMail($applicant, $finance, ApprovalStatusEnum::FINANCE_PENDING, 'Travel Authorisation');
         }
 
@@ -93,10 +93,10 @@ class TravelAuthorisationController extends Controller
     {
         $travelAuthorisation = $this->travelAuthorisationService->getById($id);
         if ($this->loggedPosition === PositionEnum::SENIOR)
-        $this->approvalService->approval($travelAuthorisation, $travelAuthorisation->supervisor_id, RoleEnum::STAFF, PositionEnum::SENIOR, ApprovalStatusEnum::MANAGER_PENDING, ApprovalStatusEnum::SUPERVISOR_PENDING);
+        $this->approvalService->approval($travelAuthorisation, $travelAuthorisation->officer_id, RoleEnum::STAFF, PositionEnum::SENIOR, ApprovalStatusEnum::MANAGER_PENDING, ApprovalStatusEnum::SUPERVISOR_PENDING);
 
-        else if ($this->loggedPosition === PositionEnum::MANAGER)
-        $this->approvalService->approval($travelAuthorisation, $travelAuthorisation->manager_id, RoleEnum::MANAGER, PositionEnum::MANAGER, ApprovalStatusEnum::FINANCE_PENDING, ApprovalStatusEnum::MANAGER_PENDING);
+        else if ($this->loggedPosition === PositionEnum::HR)
+        $this->approvalService->approval($travelAuthorisation, $travelAuthorisation->manager_id, RoleEnum::HR, PositionEnum::HR, ApprovalStatusEnum::FINANCE_PENDING, ApprovalStatusEnum::MANAGER_PENDING);
 
         else if ($this->loggedPosition === PositionEnum::FINANCE)
         $this->approvalService->approval($travelAuthorisation, $travelAuthorisation->finance_id, RoleEnum::STAFF, PositionEnum::FINANCE, ApprovalStatusEnum::APPROVED, ApprovalStatusEnum::FINANCE_PENDING);
@@ -118,15 +118,15 @@ class TravelAuthorisationController extends Controller
         $applicant = $this->userService->getUserByIdWithRelations($travelAuthorisation->applicant_id);
 
         if ($this->loggedPosition === PositionEnum::SENIOR) {
-            $supervisor = $this->userService->getUserById($travelAuthorisation->supervisor_id);
-            $this->approvalService->rejection($travelAuthorisation, $travelAuthorisation->supervisor_id, RoleEnum::STAFF, PositionEnum::SENIOR, ApprovalStatusEnum::SUPERVISOR_PENDING, ApprovalStatusEnum::SUPERVISOR_REJECTED, $request->reasons);
-            $this->notificationService->sendMail($supervisor, $applicant, ApprovalStatusEnum::SUPERVISOR_REJECTED, 'Travel Authorisation');
+            $officer = $this->userService->getUserById($travelAuthorisation->officer_id);
+            $this->approvalService->rejection($travelAuthorisation, $travelAuthorisation->officer_id, RoleEnum::STAFF, PositionEnum::SENIOR, ApprovalStatusEnum::SUPERVISOR_PENDING, ApprovalStatusEnum::SUPERVISOR_REJECTED, $request->reasons);
+            $this->notificationService->sendMail($officer, $applicant, ApprovalStatusEnum::SUPERVISOR_REJECTED, 'Travel Authorisation');
         }
 
-        else if ($this->loggedPosition === PositionEnum::MANAGER) {
-            $manager = $this->userService->getUserById($travelAuthorisation->manager_id);
-            $this->approvalService->rejection($travelAuthorisation, $travelAuthorisation->manager_id, RoleEnum::MANAGER, PositionEnum::MANAGER, ApprovalStatusEnum::MANAGER_PENDING, ApprovalStatusEnum::MANAGER_REJECTED, $request->reasons);
-            $this->notificationService->sendMail($manager, $applicant, ApprovalStatusEnum::MANAGER_REJECTED, 'Travel Authorisation');
+        else if ($this->loggedPosition === PositionEnum::HR) {
+            $HR = $this->userService->getUserById($travelAuthorisation->manager_id);
+            $this->approvalService->rejection($travelAuthorisation, $travelAuthorisation->manager_id, RoleEnum::HR, PositionEnum::HR, ApprovalStatusEnum::MANAGER_PENDING, ApprovalStatusEnum::MANAGER_REJECTED, $request->reasons);
+            $this->notificationService->sendMail($HR, $applicant, ApprovalStatusEnum::MANAGER_REJECTED, 'Travel Authorisation');
         }
 
         else if ($this->loggedPosition === PositionEnum::FINANCE) {
@@ -142,10 +142,10 @@ class TravelAuthorisationController extends Controller
     {
         $travelAuthorisation = $this->travelAuthorisationService->getById($id);
         if ($this->loggedPosition === PositionEnum::SENIOR)
-        $this->approvalService->rejection($travelAuthorisation, $travelAuthorisation->supervisor_id, RoleEnum::STAFF, PositionEnum::SENIOR, ApprovalStatusEnum::SUPERVISOR_REJECTED, ApprovalStatusEnum::SUPERVISOR_PENDING, null);
+        $this->approvalService->rejection($travelAuthorisation, $travelAuthorisation->officer_id, RoleEnum::STAFF, PositionEnum::SENIOR, ApprovalStatusEnum::SUPERVISOR_REJECTED, ApprovalStatusEnum::SUPERVISOR_PENDING, null);
 
-        else if ($this->loggedPosition === PositionEnum::MANAGER)
-        $this->approvalService->rejection($travelAuthorisation, $travelAuthorisation->manager_id, RoleEnum::MANAGER, PositionEnum::MANAGER, ApprovalStatusEnum::MANAGER_REJECTED, ApprovalStatusEnum::MANAGER_PENDING, null);
+        else if ($this->loggedPosition === PositionEnum::HR)
+        $this->approvalService->rejection($travelAuthorisation, $travelAuthorisation->manager_id, RoleEnum::HR, PositionEnum::HR, ApprovalStatusEnum::MANAGER_REJECTED, ApprovalStatusEnum::MANAGER_PENDING, null);
 
         else if ($this->loggedPosition === PositionEnum::FINANCE)
         $this->approvalService->rejection($travelAuthorisation, $travelAuthorisation->finance_id, RoleEnum::STAFF, PositionEnum::FINANCE, ApprovalStatusEnum::FINANCE_REJECTED, ApprovalStatusEnum::FINANCE_PENDING, null);

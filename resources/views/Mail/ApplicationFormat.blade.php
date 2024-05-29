@@ -26,7 +26,7 @@
             <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
                 <div class="table-responsive">
                     <table class="table align-middle text-center">
-                        @if ($receiver->position == 'Supervisor' || $receiver->position == 'Manager' ||
+                        @if ($receiver->position == 'officer' || $receiver->position == 'HR' ||
                         $receiver->position == 'Finance')
                         <div class="card">
                             <div class="card-header">{{ $type }} Approval Reminder - {{ $status }}</div>

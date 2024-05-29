@@ -63,7 +63,7 @@ const getProjects = async (page = 1) => {
                             <thead>
                                 <tr>
                                     <th>Name</th>
-                                    <th>Project Manager</th>
+                                    <th>Project HR</th>
                                     <th>Start Date</th>
                                     <th>End Date</th>
                                     <th>Description</th>

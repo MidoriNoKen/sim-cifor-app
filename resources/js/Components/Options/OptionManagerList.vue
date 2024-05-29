@@ -7,20 +7,16 @@ const props = defineProps(["form", "managers"]);
 
 <template>
     <div class="mt-4">
-        <InputLabel for="manager_id" value="Manager" />
+        <InputLabel for="manager_id" value="HR" />
         <select
             class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-            id="manager"
+            id="HR"
             v-model="form.manager_id"
         >
-            <option value="null" disabled>Select Manager</option>
+            <option value="null" disabled>Select HR</option>
             =
-            <option
-                v-for="manager in managers"
-                :value="manager.id"
-                :key="manager.id"
-            >
-                {{ manager.name }}
+            <option v-for="HR in managers" :value="HR.id" :key="HR.id">
+                {{ HR.name }}
             </option>
         </select>
         <InputError class="mt-2" :message="form.errors.manager_id" />

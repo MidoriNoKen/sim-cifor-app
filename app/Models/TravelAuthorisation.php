@@ -13,7 +13,7 @@ class TravelAuthorisation extends Model
         'id',
         'applicant_id',
         'status',
-        'supervisor_id',
+        'officer_id',
         'supervisor_reject_reasons',
         'manager_id',
         'manager_reject_reasons',
@@ -32,12 +32,12 @@ class TravelAuthorisation extends Model
         return $this->belongsTo(User::class, 'applicant_id');
     }
 
-    public function supervisor()
+    public function officer()
     {
-        return $this->belongsTo(User::class, 'supervisor_id');
+        return $this->belongsTo(User::class, 'officer_id');
     }
 
-    public function manager()
+    public function HR()
     {
         return $this->belongsTo(User::class, 'manager_id');
     }

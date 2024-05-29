@@ -73,7 +73,7 @@ const getUsers = async (page = 1) => {
                                 <tr v-for="user in users.data" :key="user.id">
                                     <td>{{ user.name }}</td>
                                     <td>{{ user.email }}</td>
-                                    <td>{{ user.role }}</td>
+                                    <td>{{ user.role.name }}</td>
                                     <td>{{ user.position }}</td>
                                     <td>{{ user.born_date }}</td>
                                     <td>
