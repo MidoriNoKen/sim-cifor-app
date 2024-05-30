@@ -94,22 +94,6 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="HR" value="HR" />
-
-                <select
-                    id="HR"
-                    class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                    v-model="form.manager_id"
-                    required
-                >
-                    <option value="" disabled>Select Position</option>
-                    <option value="">Test</option>
-                </select>
-
-                <InputError class="mt-2" :message="form.errors.manager_id" />
-            </div>
-
-            <div class="mt-4">
                 <InputLabel for="born_date" value="Born Date" />
 
                 <input

@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\RoleEnum;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,7 @@ class RoleFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->unique()->randomElement(['HR', 'Admin', 'User']),
+            'name' => $this->faker->unique()->randomElement([RoleEnum::ADMIN, RoleEnum::EMPLOYEE, RoleEnum::MANAGER, RoleEnum::DIRECTOR]),
         ];
     }
 }

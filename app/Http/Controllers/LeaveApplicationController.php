@@ -25,22 +25,27 @@ class LeaveApplicationController extends Controller
         $this->notificationService = $notificationService;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $leaveApplications = $this->leaveApplicationService->getById(auth()->id());
+        $userId = auth()->id();
+        $leaveApplications = $this->leaveApplicationService->getByIdWithPagination($request, $userId);
 
-        foreach ($leaveApplications as $leaveApplication) {
-            $this->approvalService->formattedData($leaveApplication);
+        if ($this->userService->getByIdWithRelations($userId)->position === RoleEnum::ADMIN)
+            $leaveApplications = $this->leaveApplicationService->getAll($request);
+        else {
+            foreach ($leaveApplications as $leaveApplication) {
+                $this->approvalService->formattedData($leaveApplication, $userId);
+            }
         }
 
-        return Inertia::render('LeaveApplication/Index')->with(['leaveApplications' => $leaveApplications]);
+        return Inertia::render('LeaveApplication/Index')->with(['leaveApplications' => $leaveApplications, 'positions' => PositionEnum::POSITIONS, 'roles' => RoleEnum::ROLES]);
     }
 
     public function show($id)
     {
         $leaveApplication = $this->leaveApplicationService->getById($id);
-        $user = $this->userService->getUserByIdWithRelations($leaveApplication->applicant_id);
-        $this->approvalService->formattedData($leaveApplication);
+        $user = $this->userService->getByIdWithRelations($leaveApplication->applicant_id);
+        $this->approvalService->formattedData($leaveApplication, $user->id);
 
         return Inertia::render('LeaveApplication/Show')->with(['user' => $user, 'leaveApplication' => $leaveApplication]);
     }
@@ -54,10 +59,10 @@ class LeaveApplicationController extends Controller
     {
         $result = $this->leaveApplicationService->store($request);
         if ($result != null) {
-            $applicant = $this->userService->getUserByIdWithRelations($result->applicant_id);
-            $officer = $this->userService->getUserById($applicant->officer_id);
+            $applicant = $this->userService->getByIdWithRelations($result->applicant_id);
+            $officer = $this->userService->getByIdWithRelations($applicant->officer_id);
             $this->notificationService->sendMail($officer, $applicant, ApprovalStatusEnum::NEW, 'Leave Application');
-            $this->notificationService->sendMail($applicant, $officer, ApprovalStatusEnum::SUPERVISOR_PENDING, 'Leave Application');
+            $this->notificationService->sendMail($applicant, $officer, ApprovalStatusEnum::OFFICER_PENDING, 'Leave Application');
         }
         return redirect()->route('leaveApplications.index');
     }
@@ -65,18 +70,19 @@ class LeaveApplicationController extends Controller
     public function approve($id)
     {
         $leaveApplication = $this->leaveApplicationService->getById($id);
-        $applicant = $this->userService->getUserByIdWithRelations($leaveApplication->applicant_id);
-        $officer = $this->userService->getUserById($leaveApplication->officer_id);
-        $HR = $this->userService->getUserById($leaveApplication->manager_id);
+        $applicant = $this->userService->getByIdWithRelations($leaveApplication->applicant_id);
+        $officer = $this->userService->getByIdWithRelations($leaveApplication->officer_id);
+        $HR = $this->userService->getByIdWithRelations($leaveApplication->hrManager_id);
+        $position = auth()->user()->position;
 
-        if ($this->loggedPosition === PositionEnum::SENIOR){
-            $this->approvalService->approval($leaveApplication, $leaveApplication->officer_id, RoleEnum::STAFF, PositionEnum::SENIOR, ApprovalStatusEnum::SUPERVISOR_PENDING, ApprovalStatusEnum::MANAGER_PENDING);
-            $this->notificationService->sendMail($officer, $applicant, ApprovalStatusEnum::MANAGER_PENDING, 'Leave Application');
-            $this->notificationService->sendMail($applicant, $HR, ApprovalStatusEnum::MANAGER_PENDING, 'Leave Application');
+        if ($position === PositionEnum::OFFICER) {
+            $this->approvalService->approval($leaveApplication, $leaveApplication->officer_id, RoleEnum::EMPLOYEE, PositionEnum::OFFICER, ApprovalStatusEnum::OFFICER_PENDING, ApprovalStatusEnum::HR_PENDING);
+            $this->notificationService->sendMail($officer, $applicant, ApprovalStatusEnum::HR_PENDING, 'Leave Application');
+            $this->notificationService->sendMail($applicant, $HR, ApprovalStatusEnum::HR_PENDING, 'Leave Application');
         }
 
-        else if ($this->loggedPosition === PositionEnum::HR) {
-            $this->approvalService->approval($leaveApplication, $leaveApplication->manager_id, RoleEnum::HR, PositionEnum::HR, ApprovalStatusEnum::MANAGER_PENDING, ApprovalStatusEnum::APPROVED);
+        else if ($position === PositionEnum::HR) {
+            $this->approvalService->approval($leaveApplication, $leaveApplication->manager_id, RoleEnum::MANAGER, PositionEnum::HR, ApprovalStatusEnum::HR_PENDING, ApprovalStatusEnum::APPROVED);
             $this->notificationService->sendMail($HR, $applicant, ApprovalStatusEnum::APPROVED, 'Leave Application');
         }
 
@@ -86,11 +92,13 @@ class LeaveApplicationController extends Controller
     public function disapprove($id)
     {
         $leaveApplication = $this->leaveApplicationService->getById($id);
-        if ($this->loggedPosition === PositionEnum::SENIOR)
-        $this->approvalService->approval($leaveApplication, $leaveApplication->officer_id, RoleEnum::STAFF, PositionEnum::SENIOR, ApprovalStatusEnum::MANAGER_PENDING, ApprovalStatusEnum::SUPERVISOR_PENDING);
+        $position = auth()->user()->position;
 
-        else if ($this->loggedPosition === PositionEnum::HR)
-        $this->approvalService->approval($leaveApplication, $leaveApplication->manager_id, RoleEnum::HR, PositionEnum::HR, ApprovalStatusEnum::APPROVED, ApprovalStatusEnum::MANAGER_PENDING);
+        if ($position === PositionEnum::OFFICER)
+        $this->approvalService->approval($leaveApplication, $leaveApplication->officer_id, RoleEnum::EMPLOYEE, PositionEnum::OFFICER, ApprovalStatusEnum::HR_PENDING, ApprovalStatusEnum::OFFICER_PENDING);
+
+        else if ($position === PositionEnum::HR)
+        $this->approvalService->approval($leaveApplication, $leaveApplication->manager_id, RoleEnum::MANAGER, PositionEnum::HR, ApprovalStatusEnum::APPROVED, ApprovalStatusEnum::HR_PENDING);
 
         return Inertia::location(route('leaveApplications.index'));
     }
@@ -99,25 +107,26 @@ class LeaveApplicationController extends Controller
     {
         $leaveApplication = $this->leaveApplicationService->getById($id);
 
-        $this->approvalService->formattedData($leaveApplication);
+        $this->approvalService->formattedData($leaveApplication, $id);
         return Inertia::render('LeaveApplication/Reject')->with(['leaveApplication' => $leaveApplication]);
     }
 
     public function reject(Request $request, $id)
     {
         $leaveApplication = $this->leaveApplicationService->getById($id);
-        $applicant = $this->userService->getUserByIdWithRelations($leaveApplication->applicant_id);
+        $applicant = $this->userService->getByIdWithRelations($leaveApplication->applicant_id);
+        $position = auth()->user()->position;
 
-        if ($this->loggedPosition === PositionEnum::SENIOR){
-            $officer = $this->userService->getUserById($applicant->officer_id);
-            $this->approvalService->rejection($leaveApplication, $leaveApplication->officer_id, RoleEnum::STAFF, PositionEnum::SENIOR, ApprovalStatusEnum::SUPERVISOR_PENDING, ApprovalStatusEnum::SUPERVISOR_REJECTED, $request->reasons);
-            $this->notificationService->sendMail($officer, $applicant, ApprovalStatusEnum::SUPERVISOR_REJECTED, 'Leave Application');
+        if ($position === PositionEnum::OFFICER){
+            $officer = $this->userService->getByIdWithRelations($applicant->officer_id);
+            $this->approvalService->rejection($leaveApplication, $leaveApplication->officer_id, RoleEnum::EMPLOYEE, PositionEnum::OFFICER, ApprovalStatusEnum::OFFICER_PENDING, ApprovalStatusEnum::OFFICER_REJECTED, $request->reasons);
+            $this->notificationService->sendMail($officer, $applicant, ApprovalStatusEnum::OFFICER_REJECTED, 'Leave Application');
         }
 
-        else if ($this->loggedPosition === PositionEnum::HR){
-            $HR = $this->userService->getUserById($applicant->manager_id);
-            $this->approvalService->rejection($leaveApplication, $leaveApplication->manager_id, RoleEnum::HR, PositionEnum::HR, ApprovalStatusEnum::MANAGER_PENDING, ApprovalStatusEnum::MANAGER_REJECTED, $request->reasons);
-            $this->notificationService->sendMail($HR, $applicant, ApprovalStatusEnum::MANAGER_REJECTED, 'Leave Application');
+        else if ($position === PositionEnum::HR){
+            $HR = $this->userService->getByIdWithRelations($applicant->manager_id);
+            $this->approvalService->rejection($leaveApplication, $leaveApplication->manager_id, RoleEnum::MANAGER, PositionEnum::HR, ApprovalStatusEnum::HR_PENDING, ApprovalStatusEnum::HR_REJECTED, $request->reasons);
+            $this->notificationService->sendMail($HR, $applicant, ApprovalStatusEnum::HR_REJECTED, 'Leave Application');
         }
 
         return Inertia::location(route('leaveApplications.index'));
@@ -126,11 +135,13 @@ class LeaveApplicationController extends Controller
     public function unreject($id)
     {
         $leaveApplication = $this->leaveApplicationService->getById($id);
-        if ($this->loggedPosition === PositionEnum::SENIOR)
-        $this->approvalService->rejection($leaveApplication, $leaveApplication->officer_id, RoleEnum::STAFF, PositionEnum::SENIOR, ApprovalStatusEnum::SUPERVISOR_REJECTED, ApprovalStatusEnum::SUPERVISOR_PENDING, null);
+        $position = auth()->user()->position;
 
-        else if ($this->loggedPosition === PositionEnum::HR)
-        $this->approvalService->rejection($leaveApplication, $leaveApplication->manager_id, RoleEnum::HR, PositionEnum::HR, ApprovalStatusEnum::MANAGER_REJECTED, ApprovalStatusEnum::MANAGER_PENDING, null);
+        if ($position === PositionEnum::OFFICER)
+        $this->approvalService->rejection($leaveApplication, $leaveApplication->officer_id, RoleEnum::EMPLOYEE, PositionEnum::OFFICER, ApprovalStatusEnum::OFFICER_REJECTED, ApprovalStatusEnum::OFFICER_PENDING, null);
+
+        else if ($position === PositionEnum::HR)
+        $this->approvalService->rejection($leaveApplication, $leaveApplication->manager_id, RoleEnum::MANAGER, PositionEnum::HR, ApprovalStatusEnum::HR_REJECTED, ApprovalStatusEnum::HR_PENDING, null);
 
         return Inertia::location(route('leaveApplications.index'));
     }

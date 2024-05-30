@@ -18,19 +18,19 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         Role::factory()->create([
-            'name' => 'Admin',
+            'name' => RoleEnum::ADMIN,
         ]);
 
         Role::factory()->create([
-            'name' => 'Employee',
+            'name' => RoleEnum::EMPLOYEE,
         ]);
 
         Role::factory()->create([
-            'name' => 'Manager',
+            'name' => RoleEnum::MANAGER,
         ]);
 
         Role::factory()->create([
-            'name' => 'Director',
+            'name' => RoleEnum::DIRECTOR,
         ]);
 
         $role = Role::where('name', RoleEnum::ADMIN)->first();

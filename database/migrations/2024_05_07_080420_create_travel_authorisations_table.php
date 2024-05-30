@@ -13,9 +13,9 @@ class CreateTravelAuthorisationsTable extends Migration
             $table->string('applicant_id');
             $table->string('status');
             $table->string('officer_id')->nullable();
-            $table->text('supervisor_reject_reasons')->nullable();
-            $table->string('manager_id')->nullable();
-            $table->text('manager_reject_reasons')->nullable();
+            $table->text('officer_reject_reasons')->nullable();
+            $table->string('hrManager_id')->nullable();
+            $table->text('hrManager_reject_reasons')->nullable();
             $table->string('finance_id')->nullable();
             $table->text('finance_reject_reasons')->nullable();
             $table->string('unit_id');
@@ -23,7 +23,6 @@ class CreateTravelAuthorisationsTable extends Migration
             $table->datetime('start_date');
             $table->datetime('end_date');
             $table->integer('accumulation');
-            $table->text('accommodation_detail')->nullable();
             $table->text('travel_reasons')->nullable();
             $table->timestamps();
         });

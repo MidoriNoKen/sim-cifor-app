@@ -3,58 +3,41 @@
 namespace App\Http\Services;
 
 use App\Enums\ApprovalStatusEnum;
-use App\Enums\PositionEnum;
-use App\Enums\RoleEnum;
-use App\Models\AccommodationDetail;
-use App\Models\TravelAuthorisation;
+use App\Interfaces\TravelAuthorisationInterface;
 use App\Utils\Util;
 use Carbon\Carbon;
 use Exception;
 
 class TravelAuthorisationService
 {
-    private $user, $holidayService;
+    private $travelAuthorisationRepository, $holidayService;
 
-    public function __construct(UserService $userService, HolidayService $holidayService)
+    public function __construct(TravelAuthorisationInterface $travelAuthorisationRepository, HolidayService $holidayService)
     {
-        $this->user = $userService->getLoggedUser();
+        $this->travelAuthorisationRepository = $travelAuthorisationRepository;
         $this->holidayService = $holidayService;
+    }
+
+    public function getAll($request)
+    {
+        [$page, $perPage] = Util::getPagination($request);
+        $leaveApplications = $this->travelAuthorisationRepository->getAllWithPagination($page, $perPage);
+
+        foreach ($leaveApplications as $leaveApplication) {
+            $leaveApplication->born_date = Carbon::parse($leaveApplication->born_date)->format('d F Y');
+        }
+
+        return $leaveApplications;
     }
 
     public function getById($id)
     {
-        return TravelAuthorisation::find($id);
+        return $this->travelAuthorisationRepository->getById($id);
     }
 
     public function getByIdWithAccomodation($id)
     {
-        $accommodationDetails = AccommodationDetail::where('travel_authorisation_id', $id)->get();
-        $travelAuthorisation = TravelAuthorisation::find($id);
-        $travelAuthorisation->accommodationDetails = $accommodationDetails;
-        return $travelAuthorisation;
-    }
-
-    public function getAllByLoggedPosition($page, $perPage)
-    {
-        $user = $this->user;
-        $roleName = $user->role->name;
-        $position = $user->position;
-        $userId = $user->id;
-
-        $query = TravelAuthorisation::query()->with(["applicant", "officer", "HR", "finance"]);
-
-        if ($roleName === RoleEnum::STAFF && $position === PositionEnum::SENIOR)
-        $query->where("applicant_id", $userId)->orWhere("officer_id", $userId);
-
-        else if ($roleName === RoleEnum::HR && $position === PositionEnum::HR)
-        $query->where("applicant_id", $userId)->orWhere("manager_id", $userId);
-
-        else if ($roleName === RoleEnum::STAFF && $position === PositionEnum::FINANCE)
-        $query->where("finance_id", $userId)->orWhere("finance_id", $userId);
-
-        $query->orderBy('start_date', 'desc');
-
-        return $query->paginate($perPage, ['*'], 'page', $page);
+        return $this->travelAuthorisationRepository->getByIdWithAccomodation($id);
     }
 
     public function store($request)
@@ -90,13 +73,13 @@ class TravelAuthorisationService
                 $dateRanges = $this->holidayService->splitDateRange($start_date, $end_date, $holidays);
 
                 foreach ($dateRanges as $range) {
-                    $travelAuthorisation = TravelAuthorisation::create([
+                    $travelAuthorisation = $this->travelAuthorisationRepository->create([
                         'applicant_id' => auth()->id(),
-                        'status' => ApprovalStatusEnum::SUPERVISOR_PENDING,
+                        'status' => ApprovalStatusEnum::OFFICER_PENDING,
                         'officer_id' => auth()->user()->officer_id,
-                        'supervisor_reject_reasons' => null,
-                        'manager_id' => auth()->user()->manager_id,
-                        'manager_reject_reasons' => null,
+                        'officer_reject_reasons' => null,
+                        'hrManager_id' => auth()->user()->hrManager_id,
+                        'hrManager_reject_reasons' => null,
                         'finance_id' => $request->finance_id,
                         'finance_reject_reasons' => null,
                         'unit_id' => 1,
@@ -112,13 +95,13 @@ class TravelAuthorisationService
                     }
                 }
             } else {
-                $travelAuthorisation = TravelAuthorisation::create([
+                $travelAuthorisation = $this->travelAuthorisationRepository->create([
                     'applicant_id' => auth()->id(),
-                    'status' => ApprovalStatusEnum::SUPERVISOR_PENDING,
+                    'status' => ApprovalStatusEnum::OFFICER_PENDING,
                     'officer_id' => auth()->user()->officer_id,
-                    'supervisor_reject_reasons' => null,
-                    'manager_id' => auth()->user()->manager_id,
-                    'manager_reject_reasons' => null,
+                    'officer_reject_reasons' => null,
+                    'hrManager_id' => auth()->user()->hrManager_id,
+                    'hrManager_reject_reasons' => null,
                     'finance_id' => $request->finance_id,
                     'finance_reject_reasons' => null,
                     'unit_id' => 1,

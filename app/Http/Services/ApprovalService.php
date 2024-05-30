@@ -3,41 +3,36 @@
 namespace App\Http\Services;
 
 use App\Enums\PositionEnum;
+use App\Enums\RoleEnum;
+use App\Interfaces\UserInterface;
 use App\Utils\Util;
 use Exception;
 
 class ApprovalService
 {
-    private $loggedUser, $loggedId, $loggedRole, $loggedPosition;
+    private $userRepository;
 
-    public function __construct(UserService $userService)
+    public function __construct(UserInterface $userRepository)
     {
-        $this->loggedUser = $userService->getLoggedUser();
-        $this->loggedId = $this->loggedUser->id;
-        $this->loggedRole = $this->loggedUser->role->name;
-        $this->loggedPosition = $this->loggedUser->position;
+        $this->userRepository = $userRepository;
     }
 
-    public function formattedData($data)
+    public function formattedData($data, $userId)
     {
-        $this->getAccessData($data);
         $data->start_date = Util::formatDate($data->start_date);
         $data->end_date = Util::formatDate($data->end_date);
-    }
-
-    public function getAccessData($data)
-    {
-        $loggedId = $this->loggedId;
-        $data->isSupervisor = $loggedId == $data->officer_id ? true : false;
-        $data->isManager = $loggedId == $data->manager_id ? true : false;
-        if ($this->loggedPosition == PositionEnum::FINANCE)
+        $data->isOfficial = $userId == $data->officer_id ? true : false;
+        $data->isHrManager = $userId == $data->hrManager_id ? true : false;
+        if ($this->userRepository->getById($userId)->position == PositionEnum::FINANCE)
             $data->isFinance = true;
     }
 
     public function checkAccess($userId, $role, $position)
     {
+        dd($userId, $role, $position);
+        $user = auth()->user();
         try {
-            return ($this->loggedId == $userId && $this->loggedRole == $role && $this->loggedPosition == $position)
+            return ($user->id == $userId && $user->role_id == $role && $user->position == $position)
                     ? true
                     : throw new Exception("You don't have access to this data.");
         } catch (Exception $e) {
@@ -70,14 +65,16 @@ class ApprovalService
     {
         $this->checkAccess($userId, $role, $position);
         $this->checkStatus($data->status, $status);
+        $position = auth()->user()->position;
+        $role = auth()->user()->role_id;
 
-        if ($this->loggedPosition == PositionEnum::HR)
-            $data->manager_reject_reasons = $reasons;
+        if ($position == PositionEnum::HR && $role == RoleEnum::MANAGER)
+            $data->hrManager_reject_reasons = $reasons;
 
-        else if ($this->loggedPosition == PositionEnum::SENIOR)
-            $data->supervisor_reject_reasons = $reasons;
+        else if ($position == PositionEnum::OFFICER && $role == RoleEnum::EMPLOYEE)
+            $data->officer_reject_reasons = $reasons;
 
-        else if ($this->loggedPosition == PositionEnum::FINANCE)
+        else if ($position == PositionEnum::FINANCE && $role == RoleEnum::MANAGER)
             $data->finance_reject_reasons = $reasons;
 
         $data->status = $updatedStatus;

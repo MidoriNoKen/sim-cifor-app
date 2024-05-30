@@ -3,45 +3,43 @@
 namespace App\Http\Services;
 
 use App\Enums\ApprovalStatusEnum;
-use App\Enums\PositionEnum;
-use App\Enums\RoleEnum;
-use App\Models\LeaveApplication;
+use App\Interfaces\LeaveApplicationInterface;
+use App\Repositories\UserRepository;
 use App\Utils\Util;
 use Carbon\Carbon;
 use Exception;
 
 class LeaveApplicationService
 {
-    private $user, $holidayService;
+    private $leaveApplicationRepository, $holidayService;
 
-    public function __construct(UserService $userService, HolidayService $holidayService)
+    public function __construct(LeaveApplicationInterface $leaveApplicationRepository, HolidayService $holidayService)
     {
-        $this->user = $userService;
+        $this->leaveApplicationRepository = $leaveApplicationRepository;
         $this->holidayService = $holidayService;
+    }
+
+    public function getAll($request)
+    {
+        [$page, $perPage] = Util::getPagination($request);
+        $leaveApplications = $this->leaveApplicationRepository->getAllWithPagination($page, $perPage);
+
+        foreach ($leaveApplications as $leaveApplication) {
+            $leaveApplication->born_date = Carbon::parse($leaveApplication->born_date)->format('d F Y');
+        }
+
+        return $leaveApplications;
     }
 
     public function getById($id)
     {
-        return LeaveApplication::find($id);
+        return $this->leaveApplicationRepository->getById($id);
     }
 
-    public function getAllByLoggedPosition($page, $perPage) {
-        $user = $this->user;
-        $roleName = $user->role->name;
-        $position = $user->position;
-        $userId = $user->id;
-
-        $query = LeaveApplication::query()->with(["applicant", "officer", "HR"]);
-
-        if ($roleName === RoleEnum::STAFF && $position === PositionEnum::SENIOR)
-        $query->where("applicant_id", $userId)->orWhere("officer_id", $userId);
-
-        else if ($roleName === RoleEnum::HR && $position === PositionEnum::HR)
-        $query->where("applicant_id", $userId)->orWhere("manager_id", $userId);
-
-        $query->orderBy('start_date', 'desc');
-
-        return $query->paginate($perPage, ['*'], 'page', $page);
+    public function getByIdWithPagination($request, $userId)
+    {
+        [$page, $perPage] = Util::getPagination($request);
+        return $this->leaveApplicationRepository->getByUserId($userId, $page, $perPage);
     }
 
     public function store($request)
@@ -72,13 +70,13 @@ class LeaveApplicationService
                 $dateRanges = $this->holidayService->splitDateRange($start_date, $end_date, $holidays);
 
                 foreach ($dateRanges as $range) {
-                    $leaveApplication = LeaveApplication::create([
+                    $leaveApplication = $this->leaveApplicationRepository->create([
                         'applicant_id' => auth()->id(),
-                        'status' => ApprovalStatusEnum::SUPERVISOR_PENDING,
+                        'status' => ApprovalStatusEnum::OFFICER_PENDING,
                         'officer_id' => auth()->user()->officer_id,
-                        'supervisor_reject_reasons' => null,
-                        'manager_id' => auth()->user()->manager_id,
-                        'manager_reject_reasons' => null,
+                        'officer_reject_reasons' => null,
+                        'hrManager_id' => auth()->user()->manager_id,
+                        'hrManager_reject_reasons' => null,
                         'start_date' => $range['start_date']->toDateTimeString(),
                         'end_date' => $range['end_date']->toDateTimeString(),
                         'accumulation' => Util::getDateTimeDifference($range['start_date'], $range['end_date']),
@@ -90,9 +88,9 @@ class LeaveApplicationService
                     }
                 }
             } else {
-                $leaveApplication = LeaveApplication::create([
+                $leaveApplication = $this->leaveApplicationRepository->create([
                     'applicant_id' => auth()->id(),
-                    'status' => ApprovalStatusEnum::SUPERVISOR_PENDING,
+                    'status' => ApprovalStatusEnum::OFFICER_PENDING,
                     'officer_id' => auth()->user()->officer_id,
                     'supervisor_reject_reasons' => null,
                     'manager_id' => auth()->user()->manager_id,

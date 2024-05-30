@@ -14,9 +14,9 @@ class TravelAuthorisation extends Model
         'applicant_id',
         'status',
         'officer_id',
-        'supervisor_reject_reasons',
-        'manager_id',
-        'manager_reject_reasons',
+        'officer_reject_reasons',
+        'hrManager_id',
+        'hrManager_reject_reasons',
         'finance_id',
         'finance_reject_reasons',
         'unit_id',
@@ -39,7 +39,7 @@ class TravelAuthorisation extends Model
 
     public function HR()
     {
-        return $this->belongsTo(User::class, 'manager_id');
+        return $this->belongsTo(User::class, 'hrManager_id');
     }
 
     public function finance()

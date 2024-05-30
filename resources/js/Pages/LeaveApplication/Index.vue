@@ -6,10 +6,26 @@ import { Bootstrap5Pagination } from "laravel-vue-pagination";
 import { ref } from "vue";
 
 const { role, position } = usePage().props.auth.user;
+const { roles, positions } = usePage().props;
 const leaveApplications = ref(usePage().props.leaveApplications);
-const currentPage = ref(usePage().props.leaveApplications.current_page);
-const lastPage = ref(usePage().props.leaveApplications.last_page);
-const perPage = ref(usePage().props.leaveApplications.per_page);
+const { currentPage, lastPage, perPage } = ref(
+    usePage().props.leaveApplications
+);
+
+const RoleEnum = {
+    ADMIN: roles[0],
+    EMPLOYEE: roles[1],
+    MANAGER: roles[2],
+    DIRECTOR: roles[3],
+};
+
+const PositionEnum = {
+    ADMIN: positions[0],
+    STAFF: positions[1],
+    OFFICER: positions[2],
+    HR: positions[3],
+    FINANCE: positions[4],
+};
 
 const createLeaveApplication = () => {
     router.get(`/leave-applications/create`);
@@ -50,8 +66,8 @@ const getLeaveApplication = async (page = 1) => {
                                 <tr>
                                     <th
                                         v-if="
-                                            position !== 'Junior' &&
-                                            role.name !== 'Staff'
+                                            position !== PositionEnum.STAFF &&
+                                            role.name !== RoleEnum.EMPLOYEE
                                         "
                                     >
                                         Applicant
@@ -71,8 +87,8 @@ const getLeaveApplication = async (page = 1) => {
                                 >
                                     <td
                                         v-if="
-                                            position !== 'Junior' &&
-                                            role.name !== 'Staff'
+                                            position !== PositionEnum.STAFF &&
+                                            role.name !== RoleEnum.EMPLOYEE
                                         "
                                     >
                                         {{ leaveApplication.applicant.name }}
@@ -98,16 +114,16 @@ const getLeaveApplication = async (page = 1) => {
                         />
                         <div class="text-center">
                             <div
-                                class="mt-4 mb-4 fw-semibold"
-                                v-if="leaveApplications.data.length == null"
+                                class="mt-4 mb-2 fw-semibold"
+                                v-if="leaveApplications.data.length === 0"
                             >
                                 No Data Available
                             </div>
                             <button
                                 @click="createLeaveApplication()"
-                                class="btn btn-primary hover-background btn-sm m-1"
+                                class="btn btn-primary hover-background btn-sm m-1 mt-4"
                                 style="color: white"
-                                v-if="role.name === 'Staff'"
+                                v-if="role.name === RoleEnum.EMPLOYEE"
                             >
                                 Create
                             </button>

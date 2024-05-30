@@ -15,24 +15,22 @@ use Inertia\Inertia;
 
 class TravelAuthorisationController extends Controller
 {
-    private $travelAuthorisationService, $approvalService, $userService, $loggedRole, $loggedPosition, $notificationService;
+    private $travelAuthorisationService, $approvalService, $userService, $loggedPosition, $notificationService;
 
     public function __construct(TravelAuthorisationService $travelAuthorisationService, ApprovalService $approvalService, UserService $userService, NotificationService $notificationService)
     {
         $this->travelAuthorisationService = $travelAuthorisationService;
         $this->approvalService = $approvalService;
         $this->userService = $userService;
-        $this->loggedPosition = $userService->getLoggedPosition();
         $this->notificationService = $notificationService;
     }
 
     public function index(Request $request)
     {
-        $page = $request->input('page', 1);
-        $perPage = $request->input('per_page', 5);
-        $travelAuthorisations = $this->travelAuthorisationService->getAllByLoggedPosition($page, $perPage);
+        $userId = auth()->id();
+        $travelAuthorisations = $this->travelAuthorisationService->getAll($request);
         foreach ($travelAuthorisations as $travelAuthorisation) {
-            $this->approvalService->formattedData($travelAuthorisation);
+            $this->approvalService->formattedData($travelAuthorisation, $userId);
         }
 
         return Inertia::render('TravelAuthorisation/Index')->with(['travelAuthorisations' => $travelAuthorisations]);

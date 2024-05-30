@@ -22,9 +22,9 @@ class LeaveApplicationRepository implements LeaveApplicationInterface
         return LeaveApplication::find($id);
     }
 
-    public function getByIdWithRelations($id)
+    public function getByUserId($userId, $page, $perPage)
     {
-        return LeaveApplication::with('role')->find($id);
+        return LeaveApplication::where('applicant_id', $userId)->paginate($perPage, ['*'], 'page', $page);
     }
 
     public function create(array $data)
